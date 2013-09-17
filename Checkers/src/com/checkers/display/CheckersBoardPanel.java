@@ -16,17 +16,17 @@ public class CheckersBoardPanel extends JPanel {
 	public static final int SQUARE_SIZE = 80;
 	private static final Color COLOR_ONE = Color.RED;
 	private static final Color COLOR_TWO = Color.BLACK;
-	private final ArrayList<CheckersPieceGui> checkerPieces;
+	private final ArrayList<CheckersPieceGui> checkersGuiPieces;
 
 	public CheckersBoardPanel(CheckersBoardModel checkersBoardModel) {
-		this.checkerPieces = new ArrayList<CheckersPieceGui>();
+		this.checkersGuiPieces = new ArrayList<CheckersPieceGui>();
 		for (CheckersPieceModel pieceModel : checkersBoardModel
 				.getPiecesOnBoard()) {
-			this.checkerPieces.add(new CheckersPieceGui(pieceModel));
+			this.checkersGuiPieces.add(new CheckersPieceGui(pieceModel));
 		}
 
 		CheckersPieceMouseListener checkerPieceMouseListener = new CheckersPieceMouseListener(
-				this, this.checkerPieces);
+				this, this.checkersGuiPieces, checkersBoardModel);
 		this.addMouseListener(checkerPieceMouseListener);
 		this.addMouseMotionListener(checkerPieceMouseListener);
 	}
@@ -44,11 +44,11 @@ public class CheckersBoardPanel extends JPanel {
 			}
 		}
 
-		for (CheckersPieceGui piece : this.checkerPieces) {
+		for (CheckersPieceGui piece : this.checkersGuiPieces) {
 			piece.draw(graphics2D);
 		}
 
-		for (CheckersPieceGui piece : this.checkerPieces) {
+		for (CheckersPieceGui piece : this.checkersGuiPieces) {
 			if (piece.isSelected()) {
 				piece.draw(graphics2D);
 			}

@@ -2,6 +2,8 @@ package com.checkers.model;
 
 import java.util.ArrayList;
 
+import com.checkers.rules.MoveValidator;
+
 public class CheckersBoardModel {
 
 	private ArrayList<CheckersPieceModel> piecesOnBoard;
@@ -26,6 +28,18 @@ public class CheckersBoardModel {
 				}
 			}
 		}
+	}
+
+	public boolean movePiece(CheckersPieceModel pieceToMove,
+			int newRowPosition, int newColumnPosition) {
+		boolean moveValid = MoveValidator.isMoveValid(this.piecesOnBoard,
+				pieceToMove, newRowPosition, newColumnPosition);
+		if (moveValid) {
+			pieceToMove.setRow(newRowPosition);
+			pieceToMove.setColumn(newColumnPosition);
+			return true;
+		}
+		return false;
 	}
 
 	public ArrayList<CheckersPieceModel> getPiecesOnBoard() {

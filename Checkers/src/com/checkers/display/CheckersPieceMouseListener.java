@@ -6,6 +6,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
+import com.checkers.model.CheckersBoardModel;
+
 final class CheckersPieceMouseListener implements MouseListener,
 		MouseMotionListener {
 
@@ -13,11 +15,14 @@ final class CheckersPieceMouseListener implements MouseListener,
 	private final ArrayList<CheckersPieceGui> pieces;
 	private CheckersPieceGui currentlySelectedPiece;
 	private Point mouseStartingPoint;
+	private final CheckersBoardModel checkersBoardModel;
 
 	public CheckersPieceMouseListener(CheckersBoardPanel checkerBoardPanel,
-			ArrayList<CheckersPieceGui> checkerPieces) {
+			ArrayList<CheckersPieceGui> checkerPieces,
+			CheckersBoardModel checkersBoardModel) {
 		this.checkerBoardPanel = checkerBoardPanel;
 		this.pieces = checkerPieces;
+		this.checkersBoardModel = checkersBoardModel;
 	}
 
 	@Override
@@ -27,10 +32,9 @@ final class CheckersPieceMouseListener implements MouseListener,
 			CheckersPieceGui pieceAtNewLocation = getPieceAtLocation(newBoardLocation);
 			boolean locationIsEmpty = pieceAtNewLocation == null;
 			if (locationIsEmpty) {
-				this.currentlySelectedPiece.getModel().setRow(
-						newBoardLocation.y);
-				this.currentlySelectedPiece.getModel().setColumn(
-						newBoardLocation.x);
+				this.checkersBoardModel.movePiece(
+						this.currentlySelectedPiece.getModel(),
+						newBoardLocation.y, newBoardLocation.x);
 			}
 			this.currentlySelectedPiece.setSelected(false);
 			this.checkerBoardPanel.repaint();
@@ -94,7 +98,8 @@ final class CheckersPieceMouseListener implements MouseListener,
 	private Point getScreenLocationOfPiece(CheckersPieceGui piece) {
 		int screenX = piece.getModel().getColumn()
 				* CheckersBoardPanel.SQUARE_SIZE;
-		int screenY = piece.getModel().getRow() * CheckersBoardPanel.SQUARE_SIZE;
+		int screenY = piece.getModel().getRow()
+				* CheckersBoardPanel.SQUARE_SIZE;
 
 		return new Point(screenX, screenY);
 	}
