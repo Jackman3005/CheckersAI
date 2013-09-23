@@ -153,6 +153,7 @@ public class MoveValidator {
 			}
 		}
 		return listOfValidMoves;
+
 	}
 
 	private static List<PossibleMove> checkForMultipleJumpMovesAndReturn(
