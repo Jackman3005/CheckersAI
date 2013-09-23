@@ -12,10 +12,11 @@ public class MainFrame extends JFrame {
 		this.setSize(size + 6, size + 28);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+		this.setFocusable(false);
 		CheckersBoardPanel checkerBoardPanel = new CheckersBoardPanel(
 				checkersBoardModel);
 		this.add(checkerBoardPanel);
+
 	}
 
 }

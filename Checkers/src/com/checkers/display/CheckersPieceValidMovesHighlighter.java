@@ -31,8 +31,8 @@ public class CheckersPieceValidMovesHighlighter {
 						checkersPiece);
 
 		for (PossibleMove possibleMove : allValidMoves) {
-			graphics2D.drawOval(possibleMove.getNewColumnLocation() * size,
-					possibleMove.getNewRowLocation() * size, size, size);
+			graphics2D.drawOval(possibleMove.getEndingColumnLocation() * size,
+					possibleMove.getEndingRowLocation() * size, size, size);
 		}
 
 	}

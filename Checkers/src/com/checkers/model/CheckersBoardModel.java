@@ -1,15 +1,16 @@
 package com.checkers.model;
 
 import java.util.ArrayList;
-
-import com.checkers.rules.MoveValidator;
+import java.util.List;
 
 public class CheckersBoardModel {
 
 	private ArrayList<CheckersPieceModel> piecesOnBoard;
+	private final List<CheckersBoardObserverInterface> observers;
 
 	public CheckersBoardModel() {
 		initializeBoard();
+		this.observers = new ArrayList<CheckersBoardObserverInterface>();
 	}
 
 	private void initializeBoard() {
@@ -30,19 +31,76 @@ public class CheckersBoardModel {
 		}
 	}
 
-	public boolean movePiece(CheckersPieceModel pieceToMove,
-			int newRowPosition, int newColumnPosition) {
-		boolean moveValid = MoveValidator.isMoveValid(this.piecesOnBoard,
-				pieceToMove, newRowPosition, newColumnPosition);
-		if (moveValid) {
-			pieceToMove.setRow(newRowPosition);
-			pieceToMove.setColumn(newColumnPosition);
-			return true;
+	public boolean capturePiece(CheckersPieceModel pieceToCapture) {
+		pieceToCapture.capturePiece();
+		boolean pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy = this.piecesOnBoard
+				.remove(pieceToCapture);
+		if (pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy) {
+			notifyObserversThatTheBoardChanged();
 		}
-		return false;
+		return pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy;
 	}
 
-	public ArrayList<CheckersPieceModel> getPiecesOnBoard() {
+	public boolean actuallyMovePiece(PossibleMove moveToMake) {
+		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
+		int rowToMoveTo = moveToMake.getEndingRowLocation();
+		pieceToMove.setRow(rowToMoveTo);
+		pieceToMove.setColumn(moveToMake.getEndingColumnLocation());
+
+		if (rowToMoveTo == 0
+				&& pieceToMove.getPlayerToken().equals(PlayerToken.PLAYER)) {
+			pieceToMove.kingMe();
+		} else if (rowToMoveTo == 7
+				&& pieceToMove.getPlayerToken().equals(PlayerToken.OPPONENT)) {
+			pieceToMove.kingMe();
+		}
+
+		notifyObserversThatTheBoardChanged();
+		return this.piecesOnBoard.contains(pieceToMove);
+	}
+
+	public static List<CheckersPieceModel> emulateMovingAPieceAndReturnCopyOfPiecesOnBoard(
+			List<CheckersPieceModel> allPiecesOnBoard,
+			PossibleMove moveToEmulate) {
+		List<CheckersPieceModel> copyOfPiecesOnBoardWithMoveEmulated = new ArrayList<CheckersPieceModel>();
+		for (CheckersPieceModel checkersPieceModel : allPiecesOnBoard) {
+			if (checkersPieceModel.equals(moveToEmulate.getPieceToMove())) {
+				CheckersPieceModel movedCheckerPieceCopy = new CheckersPieceModel(
+						moveToEmulate.getEndingRowLocation(),
+						moveToEmulate.getEndingColumnLocation(), moveToEmulate
+								.getPieceToMove().getPlayerToken());
+				copyOfPiecesOnBoardWithMoveEmulated.add(movedCheckerPieceCopy);
+			} else {
+				// We may not actually have to make a copy of the pieces that
+				// do not move. Depends on how we implement our AI. If we don't
+				// need to copy unmoved pieces then we could save a lot of
+				// memory by not copying them lol
+
+				CheckersPieceModel copyOfCheckersPieceModel = CheckersPieceModel
+						.copy(checkersPieceModel);
+				copyOfPiecesOnBoardWithMoveEmulated
+						.add(copyOfCheckersPieceModel);
+			}
+		}
+
+		return copyOfPiecesOnBoardWithMoveEmulated;
+	}
+
+	private void notifyObserversThatTheBoardChanged() {
+		for (CheckersBoardObserverInterface observer : this.observers) {
+			observer.boardChanged();
+		}
+	}
+
+	public void addObserver(CheckersBoardObserverInterface observer) {
+		this.observers.add(observer);
+	}
+
+	public void removeObserver(CheckersBoardObserverInterface observer) {
+		this.observers.remove(observer);
+	}
+
+	public List<CheckersPieceModel> getPiecesOnBoard() {
 		return this.piecesOnBoard;
 	}
 }

@@ -17,8 +17,8 @@ public class MoveValidator {
 		ArrayList<PossibleMove> allValidMoves = getAllValidMovesForASinglePiece(
 				allPiecesOnBoard, pieceToMove);
 		for (PossibleMove possibleMove : allValidMoves) {
-			if (possibleMove.getNewColumnLocation() == newColumnPosition
-					&& possibleMove.getNewRowLocation() == newRowPosition) {
+			if (possibleMove.getEndingColumnLocation() == newColumnPosition
+					&& possibleMove.getEndingRowLocation() == newRowPosition) {
 				return true;
 			}
 		}
