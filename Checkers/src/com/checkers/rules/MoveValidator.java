@@ -1,5 +1,6 @@
 package com.checkers.rules;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import com.checkers.model.PossibleMove;
 
 public class MoveValidator {
 
-	public static boolean isMoveValid(
+	public static PossibleMove validateAndReturnMove_InvalidMoveReturnsNull(
 			List<CheckersPieceModel> allPiecesOnBoard,
 			CheckersPieceModel pieceToMove, int newRowPosition,
 			int newColumnPosition) {
@@ -17,12 +18,12 @@ public class MoveValidator {
 		ArrayList<PossibleMove> allValidMoves = getAllValidMovesForASinglePiece(
 				allPiecesOnBoard, pieceToMove);
 		for (PossibleMove possibleMove : allValidMoves) {
-			if (possibleMove.getEndingColumnLocation() == newColumnPosition
-					&& possibleMove.getEndingRowLocation() == newRowPosition) {
-				return true;
+			if (possibleMove.getNewColumnLocation() == newColumnPosition
+					&& possibleMove.getNewRowLocation() == newRowPosition) {
+				return possibleMove;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public static List<PossibleMove> getAllValidMovesForPlayer(
@@ -43,13 +44,163 @@ public class MoveValidator {
 			CheckersPieceModel checkersPiece) {
 		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
 
-		listOfValidMoves.addAll(getValidMovesWithinRadius(allPiecesOnBoard,
-				checkersPiece));
+		listOfValidMoves.addAll(getValidMovesTwoLocationsAway_JumpMoves(
+				allPiecesOnBoard, checkersPiece, Integer.MIN_VALUE,
+				Integer.MIN_VALUE));
+		if (listOfValidMoves.size() == 0) {
+			listOfValidMoves
+					.addAll(getValidMovesWithinOneLocationAway_NonJumpMoves(
+							allPiecesOnBoard, checkersPiece));
+		}
 
 		return listOfValidMoves;
 	}
 
-	private static List<PossibleMove> getValidMovesWithinRadius(
+	private static List<PossibleMove> getValidMovesTwoLocationsAway_JumpMoves(
+			List<CheckersPieceModel> allPiecesOnBoard,
+			CheckersPieceModel checkersPiece, int rowPositionFromPreviousJump,
+			int columnPositionFromPreviousJump) {
+		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
+		boolean northIsForward = checkersPiece.getPlayerToken().equals(
+				PlayerToken.PLAYER);
+
+		int northRow = checkersPiece.getRow() - 1;
+		int southRow = checkersPiece.getRow() + 1;
+		int westColumn = checkersPiece.getColumn() - 1;
+		int eastColumn = checkersPiece.getColumn() + 1;
+
+		if (northIsForward || checkersPiece.isKing()) {
+			if (northRow - 1 != rowPositionFromPreviousJump
+					&& westColumn - 1 != columnPositionFromPreviousJump) {
+				CheckersPieceModel pieceAtNorthWestLocation = getPieceAtLocation(
+						allPiecesOnBoard, northRow, westColumn);
+				if (pieceAtNorthWestLocation != null
+						&& !pieceAtNorthWestLocation.getPlayerToken().equals(
+								checkersPiece.getPlayerToken())) {
+					PossibleMove northWestJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+							allPiecesOnBoard, checkersPiece, -2, -2);
+					if (northWestJumpMove != null) {
+						listOfValidMoves
+								.addAll(checkForMultipleJumpMovesAndReturn(
+										allPiecesOnBoard, checkersPiece,
+										pieceAtNorthWestLocation,
+										northWestJumpMove, -2, -2));
+					}
+				}
+			}
+			if (northRow - 1 != rowPositionFromPreviousJump
+					&& eastColumn + 1 != columnPositionFromPreviousJump) {
+				CheckersPieceModel pieceAtNorthEastLocation = getPieceAtLocation(
+						allPiecesOnBoard, northRow, eastColumn);
+				if (pieceAtNorthEastLocation != null
+						&& !pieceAtNorthEastLocation.getPlayerToken().equals(
+								checkersPiece.getPlayerToken())) {
+					PossibleMove northEastJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+							allPiecesOnBoard, checkersPiece, -2, 2);
+					if (northEastJumpMove != null) {
+						listOfValidMoves
+								.addAll(checkForMultipleJumpMovesAndReturn(
+										allPiecesOnBoard, checkersPiece,
+										pieceAtNorthEastLocation,
+										northEastJumpMove, -2, 2));
+					}
+				}
+			}
+		}
+		if (!northIsForward || checkersPiece.isKing()) {
+			if (southRow + 1 != rowPositionFromPreviousJump
+					&& westColumn - 1 != columnPositionFromPreviousJump) {
+				CheckersPieceModel pieceAtSouthWestLocation = getPieceAtLocation(
+						allPiecesOnBoard, southRow, westColumn);
+				if (pieceAtSouthWestLocation != null
+						&& !pieceAtSouthWestLocation.getPlayerToken().equals(
+								checkersPiece.getPlayerToken())) {
+					PossibleMove southWestJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+							allPiecesOnBoard, checkersPiece, 2, -2);
+					if (southWestJumpMove != null) {
+						listOfValidMoves
+								.addAll(checkForMultipleJumpMovesAndReturn(
+										allPiecesOnBoard, checkersPiece,
+										pieceAtSouthWestLocation,
+										southWestJumpMove, 2, -2));
+					}
+				}
+			}
+			if (southRow + 1 != rowPositionFromPreviousJump
+					&& eastColumn + 1 != columnPositionFromPreviousJump) {
+				CheckersPieceModel pieceAtSouthEastLocation = getPieceAtLocation(
+						allPiecesOnBoard, southRow, eastColumn);
+				if (pieceAtSouthEastLocation != null
+						&& !pieceAtSouthEastLocation.getPlayerToken().equals(
+								checkersPiece.getPlayerToken())) {
+					PossibleMove southEastJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+							allPiecesOnBoard, checkersPiece, 2, 2);
+					if (southEastJumpMove != null) {
+						listOfValidMoves
+								.addAll(checkForMultipleJumpMovesAndReturn(
+										allPiecesOnBoard, checkersPiece,
+										pieceAtSouthEastLocation,
+										southEastJumpMove, 2, 2));
+					}
+				}
+			}
+		}
+		return listOfValidMoves;
+	}
+
+	private static List<PossibleMove> checkForMultipleJumpMovesAndReturn(
+			List<CheckersPieceModel> allPiecesOnBoard,
+			CheckersPieceModel checkersPiece,
+			CheckersPieceModel pieceBeingJumped_AKACaptured,
+			PossibleMove previousJumpMove, int rowAdjustment,
+			int columnAdjustment) {
+
+		List<PossibleMove> listOfValidJumpMoves = new ArrayList<PossibleMove>();
+
+		CheckersPieceModel tempCheckersPiece = new CheckersPieceModel(
+				checkersPiece.getRow() + rowAdjustment,
+				checkersPiece.getColumn() + columnAdjustment,
+				checkersPiece.getPlayerToken());
+		if (checkersPiece.isKing()) {
+			tempCheckersPiece.kingMe();
+		}
+		List<PossibleMove> additionalJumps = getValidMovesTwoLocationsAway_JumpMoves(
+				allPiecesOnBoard, tempCheckersPiece, checkersPiece.getRow(),
+				checkersPiece.getColumn());
+		if (additionalJumps.size() > 0)
+			for (PossibleMove possibleMove : additionalJumps) {
+				PossibleMove multiJumpMove = new PossibleMove(checkersPiece,
+						possibleMove.getNewRowLocation(),
+						possibleMove.getNewColumnLocation());
+				multiJumpMove.addIntermediateLocation(
+						previousJumpMove.getNewRowLocation(),
+						previousJumpMove.getNewColumnLocation());
+				multiJumpMove
+						.addPieceThatWillBeCaptured(pieceBeingJumped_AKACaptured);
+				List<CheckersPieceModel> piecesThatHaveBeenCaptured = possibleMove
+						.getPiecesThatWillBeCaptured();
+				if (piecesThatHaveBeenCaptured
+						.contains(pieceBeingJumped_AKACaptured))
+					continue;
+				for (CheckersPieceModel jumpedPieces : piecesThatHaveBeenCaptured) {
+					multiJumpMove.addPieceThatWillBeCaptured(jumpedPieces);
+				}
+				for (Point intermediateLocation : possibleMove
+						.getIntermediateLocations()) {
+					multiJumpMove.addIntermediateLocation(
+							intermediateLocation.y, intermediateLocation.x);
+				}
+				listOfValidJumpMoves.add(multiJumpMove);
+			}
+		else {
+			previousJumpMove
+					.addPieceThatWillBeCaptured(pieceBeingJumped_AKACaptured);
+			listOfValidJumpMoves.add(previousJumpMove);
+		}
+		return listOfValidJumpMoves;
+	}
+
+	private static List<PossibleMove> getValidMovesWithinOneLocationAway_NonJumpMoves(
 			List<CheckersPieceModel> allPiecesOnBoard,
 			CheckersPieceModel checkersPiece) {
 

@@ -36,16 +36,12 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 		if (this.currentlySelectedPiece != null) {
 
 			Point newBoardLocation = getBoardLocation(arg0.getPoint());
-			boolean moveIsValid = MoveValidator.isMoveValid(
-					this.checkersBoardModel.getPiecesOnBoard(),
-					this.currentlySelectedPiece.getModel(), newBoardLocation.y,
-					newBoardLocation.x);
-			if (moveIsValid) {
-				PossibleMove move = new PossibleMove(
-						this.currentlySelectedPiece.getModel(),
-						newBoardLocation.y, newBoardLocation.x);
-				this.checkersBoardModel.actuallyMovePiece(move);
-			}
+			PossibleMove move = MoveValidator
+					.validateAndReturnMove_InvalidMoveReturnsNull(
+							this.checkersBoardModel.getPiecesOnBoard(),
+							this.currentlySelectedPiece.getModel(),
+							newBoardLocation.y, newBoardLocation.x);
+			this.checkersBoardModel.actuallyMovePiece(move);
 			this.currentlySelectedPiece.setSelected(false);
 		} else if (this.currentlySelectedPiece_WithRightClick != null) {
 			Point newBoardLocation = getBoardLocation(arg0.getPoint());
@@ -143,6 +139,7 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 
 	@Override
 	public void keyTyped(KeyEvent keyPress) {
+
 		if (this.currentlySelectedPiece_WithRightClick != null) {
 			if (keyPress.getKeyChar() == 'k') {
 				this.currentlySelectedPiece_WithRightClick.getModel().kingMe();

@@ -35,17 +35,17 @@ public class CheckersBoardModel {
 		pieceToCapture.capturePiece();
 		boolean pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy = this.piecesOnBoard
 				.remove(pieceToCapture);
-		if (pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy) {
-			notifyObserversThatTheBoardChanged();
-		}
+		notifyObserversThatTheBoardChanged();
 		return pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy;
 	}
 
 	public boolean actuallyMovePiece(PossibleMove moveToMake) {
+		if (moveToMake == null)
+			return false;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
-		int rowToMoveTo = moveToMake.getEndingRowLocation();
+		int rowToMoveTo = moveToMake.getNewRowLocation();
 		pieceToMove.setRow(rowToMoveTo);
-		pieceToMove.setColumn(moveToMake.getEndingColumnLocation());
+		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
 
 		if (rowToMoveTo == 0
 				&& pieceToMove.getPlayerToken().equals(PlayerToken.PLAYER)) {
@@ -53,6 +53,11 @@ public class CheckersBoardModel {
 		} else if (rowToMoveTo == 7
 				&& pieceToMove.getPlayerToken().equals(PlayerToken.OPPONENT)) {
 			pieceToMove.kingMe();
+		}
+
+		for (CheckersPieceModel checkersPiece : moveToMake
+				.getPiecesThatWillBeCaptured()) {
+			capturePiece(checkersPiece);
 		}
 
 		notifyObserversThatTheBoardChanged();
@@ -66,8 +71,8 @@ public class CheckersBoardModel {
 		for (CheckersPieceModel checkersPieceModel : allPiecesOnBoard) {
 			if (checkersPieceModel.equals(moveToEmulate.getPieceToMove())) {
 				CheckersPieceModel movedCheckerPieceCopy = new CheckersPieceModel(
-						moveToEmulate.getEndingRowLocation(),
-						moveToEmulate.getEndingColumnLocation(), moveToEmulate
+						moveToEmulate.getNewRowLocation(),
+						moveToEmulate.getNewColumnLocation(), moveToEmulate
 								.getPieceToMove().getPlayerToken());
 				copyOfPiecesOnBoardWithMoveEmulated.add(movedCheckerPieceCopy);
 			} else {
