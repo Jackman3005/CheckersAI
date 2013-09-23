@@ -70,8 +70,8 @@ public class MoveValidator {
 		int eastColumn = checkersPiece.getColumn() + 1;
 
 		if (northIsForward || checkersPiece.isKing()) {
-			if (northRow - 1 != rowPositionFromPreviousJump
-					&& westColumn - 1 != columnPositionFromPreviousJump) {
+			if ((northRow - 1) != rowPositionFromPreviousJump
+					|| (westColumn - 1) != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtNorthWestLocation = getPieceAtLocation(
 						allPiecesOnBoard, northRow, westColumn);
 				if (pieceAtNorthWestLocation != null
@@ -88,8 +88,8 @@ public class MoveValidator {
 					}
 				}
 			}
-			if (northRow - 1 != rowPositionFromPreviousJump
-					&& eastColumn + 1 != columnPositionFromPreviousJump) {
+			if ((northRow - 1) != rowPositionFromPreviousJump
+					|| (eastColumn + 1) != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtNorthEastLocation = getPieceAtLocation(
 						allPiecesOnBoard, northRow, eastColumn);
 				if (pieceAtNorthEastLocation != null
@@ -108,8 +108,8 @@ public class MoveValidator {
 			}
 		}
 		if (!northIsForward || checkersPiece.isKing()) {
-			if (southRow + 1 != rowPositionFromPreviousJump
-					&& westColumn - 1 != columnPositionFromPreviousJump) {
+			if ((southRow + 1) != rowPositionFromPreviousJump
+					|| (westColumn - 1) != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtSouthWestLocation = getPieceAtLocation(
 						allPiecesOnBoard, southRow, westColumn);
 				if (pieceAtSouthWestLocation != null
@@ -126,8 +126,9 @@ public class MoveValidator {
 					}
 				}
 			}
-			if (southRow + 1 != rowPositionFromPreviousJump
-					&& eastColumn + 1 != columnPositionFromPreviousJump) {
+
+			if ((southRow + 1) != rowPositionFromPreviousJump
+					|| (eastColumn + 1) != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtSouthEastLocation = getPieceAtLocation(
 						allPiecesOnBoard, southRow, eastColumn);
 				if (pieceAtSouthEastLocation != null
@@ -180,8 +181,9 @@ public class MoveValidator {
 				List<CheckersPieceModel> piecesThatHaveBeenCaptured = possibleMove
 						.getPiecesThatWillBeCaptured();
 				if (piecesThatHaveBeenCaptured
-						.contains(pieceBeingJumped_AKACaptured))
+						.contains(pieceBeingJumped_AKACaptured)) {
 					continue;
+				}
 				for (CheckersPieceModel jumpedPieces : piecesThatHaveBeenCaptured) {
 					multiJumpMove.addPieceThatWillBeCaptured(jumpedPieces);
 				}
