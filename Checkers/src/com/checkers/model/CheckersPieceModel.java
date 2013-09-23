@@ -64,4 +64,12 @@ public class CheckersPieceModel {
 		return copyOfCheckersPiece;
 	}
 
+	public void undoCapturePiece() {
+		this.isCaptured = false;
+	}
+
+	public void undoKingMe() {
+		this.isKing = false;
+	}
+
 }

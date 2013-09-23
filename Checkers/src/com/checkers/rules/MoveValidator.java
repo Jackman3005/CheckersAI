@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.checkers.display.CheckersBoardPanel;
 import com.checkers.model.CheckersPieceModel;
 import com.checkers.model.PlayerToken;
 import com.checkers.model.PossibleMove;
@@ -69,9 +70,14 @@ public class MoveValidator {
 		int westColumn = checkersPiece.getColumn() - 1;
 		int eastColumn = checkersPiece.getColumn() + 1;
 
+		int northJumpRow = northRow - 1;
+		int southJumpRow = southRow + 1;
+		int westJumpColumn = westColumn - 1;
+		int eastJumpColumn = eastColumn + 1;
+
 		if (northIsForward || checkersPiece.isKing()) {
-			if ((northRow - 1) != rowPositionFromPreviousJump
-					|| (westColumn - 1) != columnPositionFromPreviousJump) {
+			if (northJumpRow != rowPositionFromPreviousJump
+					|| westJumpColumn != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtNorthWestLocation = getPieceAtLocation(
 						allPiecesOnBoard, northRow, westColumn);
 				if (pieceAtNorthWestLocation != null
@@ -88,8 +94,8 @@ public class MoveValidator {
 					}
 				}
 			}
-			if ((northRow - 1) != rowPositionFromPreviousJump
-					|| (eastColumn + 1) != columnPositionFromPreviousJump) {
+			if (northJumpRow != rowPositionFromPreviousJump
+					|| eastJumpColumn != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtNorthEastLocation = getPieceAtLocation(
 						allPiecesOnBoard, northRow, eastColumn);
 				if (pieceAtNorthEastLocation != null
@@ -108,8 +114,8 @@ public class MoveValidator {
 			}
 		}
 		if (!northIsForward || checkersPiece.isKing()) {
-			if ((southRow + 1) != rowPositionFromPreviousJump
-					|| (westColumn - 1) != columnPositionFromPreviousJump) {
+			if (southJumpRow != rowPositionFromPreviousJump
+					|| westJumpColumn != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtSouthWestLocation = getPieceAtLocation(
 						allPiecesOnBoard, southRow, westColumn);
 				if (pieceAtSouthWestLocation != null
@@ -127,8 +133,8 @@ public class MoveValidator {
 				}
 			}
 
-			if ((southRow + 1) != rowPositionFromPreviousJump
-					|| (eastColumn + 1) != columnPositionFromPreviousJump) {
+			if (southJumpRow != rowPositionFromPreviousJump
+					|| eastJumpColumn != columnPositionFromPreviousJump) {
 				CheckersPieceModel pieceAtSouthEastLocation = getPieceAtLocation(
 						allPiecesOnBoard, southRow, eastColumn);
 				if (pieceAtSouthEastLocation != null
@@ -241,8 +247,10 @@ public class MoveValidator {
 		int newRowLocation = checkersPiece.getRow() + rowAdjustment;
 		int newColumnLocation = checkersPiece.getColumn() + columnAdjustment;
 
-		boolean moveIsOnBoard = newRowLocation >= 0 && newRowLocation <= 7
-				&& newColumnLocation >= 0 && newColumnLocation <= 7;
+		boolean moveIsOnBoard = newRowLocation >= 0
+				&& newRowLocation < CheckersBoardPanel.BOARD_SIZE
+				&& newColumnLocation >= 0
+				&& newColumnLocation < CheckersBoardPanel.BOARD_SIZE;
 
 		if (moveIsOnBoard
 				&& locationIsUnoccupied(allPiecesOnBoard, checkersPiece,

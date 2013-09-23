@@ -2,15 +2,18 @@ package com.checkers.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class CheckersBoardModel {
 
 	private ArrayList<CheckersPieceModel> piecesOnBoard;
 	private final List<CheckersBoardObserverInterface> observers;
+	private final Stack<UndoableMove> undoMoveStack;
 
 	public CheckersBoardModel() {
 		initializeBoard();
 		this.observers = new ArrayList<CheckersBoardObserverInterface>();
+		this.undoMoveStack = new Stack<UndoableMove>();
 	}
 
 	private void initializeBoard() {
@@ -44,24 +47,57 @@ public class CheckersBoardModel {
 			return false;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
 		int rowToMoveTo = moveToMake.getNewRowLocation();
-		pieceToMove.setRow(rowToMoveTo);
-		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
 
+		boolean pieceShouldBecomeKing = false;
 		if (rowToMoveTo == 0
 				&& pieceToMove.getPlayerToken().equals(PlayerToken.PLAYER)) {
-			pieceToMove.kingMe();
+			pieceShouldBecomeKing = true;
 		} else if (rowToMoveTo == 7
 				&& pieceToMove.getPlayerToken().equals(PlayerToken.OPPONENT)) {
+			pieceShouldBecomeKing = true;
+		}
+		UndoableMove undoableMoveToRevertThisMove = new UndoableMove(
+				moveToMake, pieceToMove.getRow(), pieceToMove.getColumn(),
+				pieceShouldBecomeKing);
+
+		if (pieceShouldBecomeKing) {
 			pieceToMove.kingMe();
 		}
+		pieceToMove.setRow(rowToMoveTo);
+		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
 
 		for (CheckersPieceModel checkersPiece : moveToMake
 				.getPiecesThatWillBeCaptured()) {
 			capturePiece(checkersPiece);
 		}
 
+		this.undoMoveStack.push(undoableMoveToRevertThisMove);
 		notifyObserversThatTheBoardChanged();
 		return this.piecesOnBoard.contains(pieceToMove);
+	}
+
+	public UndoableMove undoLastMove() {
+		if (!this.undoMoveStack.isEmpty()) {
+			UndoableMove lastMoveMade = this.undoMoveStack.pop();
+
+			PossibleMove moveToUndo = lastMoveMade.getMoveToUndo();
+			CheckersPieceModel pieceToMoveBack = moveToUndo.getPieceToMove();
+			pieceToMoveBack.setRow(lastMoveMade.getOldPieceRowLocation());
+			pieceToMoveBack.setColumn(lastMoveMade.getOldPieceColumnLocation());
+
+			for (CheckersPieceModel capturedPiece : moveToUndo
+					.getPiecesThatWillBeCaptured()) {
+				capturedPiece.undoCapturePiece();
+				this.piecesOnBoard.add(capturedPiece);
+			}
+
+			if (lastMoveMade.pieceWasKingedDuringMove()) {
+				pieceToMoveBack.undoKingMe();
+			}
+			notifyObserversThatTheBoardChanged();
+			return lastMoveMade;
+		}
+		return null;
 	}
 
 	public static List<CheckersPieceModel> emulateMovingAPieceAndReturnCopyOfPiecesOnBoard(

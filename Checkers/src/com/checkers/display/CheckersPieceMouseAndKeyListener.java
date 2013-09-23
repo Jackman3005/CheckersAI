@@ -130,7 +130,10 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 	}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent keyPress) {
+		if (keyPress.isControlDown() && keyPress.getKeyCode() == 90) {
+			this.checkersBoardModel.undoLastMove();
+		}
 	}
 
 	@Override
@@ -139,6 +142,9 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 
 	@Override
 	public void keyTyped(KeyEvent keyPress) {
+
+		// KeyStroke ctrlZKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z,
+		// java.awt.event.InputEvent.CTRL_DOWN_MASK);
 
 		if (this.currentlySelectedPiece_WithRightClick != null) {
 			if (keyPress.getKeyChar() == 'k') {
