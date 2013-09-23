@@ -20,9 +20,12 @@ public class CheckersBoardPanel extends JPanel {
 
 	public CheckersBoardPanel(CheckersBoardModel checkersBoardModel) {
 		this.checkersGuiPieces = new ArrayList<CheckersPieceGui>();
+		CheckersPieceValidMovesHighlighter validMovesHighlighter = new CheckersPieceValidMovesHighlighter(
+				checkersBoardModel);
 		for (CheckersPieceModel pieceModel : checkersBoardModel
 				.getPiecesOnBoard()) {
-			this.checkersGuiPieces.add(new CheckersPieceGui(pieceModel));
+			this.checkersGuiPieces.add(new CheckersPieceGui(pieceModel,
+					validMovesHighlighter));
 		}
 
 		CheckersPieceMouseListener checkerPieceMouseListener = new CheckersPieceMouseListener(

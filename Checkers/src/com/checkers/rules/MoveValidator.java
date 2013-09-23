@@ -14,20 +14,15 @@ public class MoveValidator {
 			CheckersPieceModel pieceToMove, int newRowPosition,
 			int newColumnPosition) {
 
-		boolean isMovingToABlackTile = (newRowPosition + newColumnPosition) % 2 != 0;
-
-		int currentRowPosition = pieceToMove.getRow();
-		int currentColumnPosition = pieceToMove.getColumn();
-
-		int rowMovement = Math.abs(newRowPosition - currentRowPosition);
-		int columnMovement = Math
-				.abs(newColumnPosition - currentColumnPosition);
-
-		boolean isMovingOnlyOneSpaceAway_ThisIsAnUnfinishedRule = columnMovement <= 1
-				&& rowMovement <= 1;
-
-		return isMovingToABlackTile
-				&& isMovingOnlyOneSpaceAway_ThisIsAnUnfinishedRule;
+		ArrayList<PossibleMove> allValidMoves = getAllValidMovesForASinglePiece(
+				allPiecesOnBoard, pieceToMove);
+		for (PossibleMove possibleMove : allValidMoves) {
+			if (possibleMove.getNewColumnLocation() == newColumnPosition
+					&& possibleMove.getNewRowLocation() == newRowPosition) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static List<PossibleMove> getAllValidMovesForPlayer(
@@ -36,67 +31,83 @@ public class MoveValidator {
 				allPiecesOnBoard, player);
 		ArrayList<PossibleMove> allValidMoves = new ArrayList<PossibleMove>();
 		for (CheckersPieceModel checkersPiece : piecesToCheck) {
-			allValidMoves.addAll(getAllValidMovesForASinglePiece(allPiecesOnBoard,
-					player, checkersPiece));
+			allValidMoves.addAll(getAllValidMovesForASinglePiece(
+					allPiecesOnBoard, checkersPiece));
 
 		}
 		return allValidMoves;
 	}
 
 	public static ArrayList<PossibleMove> getAllValidMovesForASinglePiece(
-			List<CheckersPieceModel> allPiecesOnBoard, PlayerToken player,
+			List<CheckersPieceModel> allPiecesOnBoard,
 			CheckersPieceModel checkersPiece) {
-		int row = checkersPiece.getRow();
-		int column = checkersPiece.getColumn();
-
-		boolean northIsForward = player.equals(PlayerToken.PLAYER);
 		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
 
+		listOfValidMoves.addAll(getValidMovesWithinRadius(allPiecesOnBoard,
+				checkersPiece));
+
+		return listOfValidMoves;
+	}
+
+	private static List<PossibleMove> getValidMovesWithinRadius(
+			List<CheckersPieceModel> allPiecesOnBoard,
+			CheckersPieceModel checkersPiece) {
+
+		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
+		boolean northIsForward = checkersPiece.getPlayerToken().equals(
+				PlayerToken.PLAYER);
 		if (northIsForward || checkersPiece.isKing()) {
-			int northWestRow = row - 1;
-			int northWestColumn = column - 1;
-			int northEastRow = row - 1;
-			int northEastColumn = column + 1;
+			PossibleMove northWestMove = checkForAndReturnValidMoveInAdjustmentDirection(
+					allPiecesOnBoard, checkersPiece, -1, -1);
+			if (northWestMove != null)
+				listOfValidMoves.add(northWestMove);
 
-			CheckersPieceModel northWestPiece = getPieceAtLocation(
-					allPiecesOnBoard, northWestRow, northWestColumn);
-			CheckersPieceModel northEastPiece = getPieceAtLocation(
-					allPiecesOnBoard, northEastRow, northEastColumn);
-			boolean northEastLocationIsEmpty = northEastPiece == null;
-			boolean northWestLocationIsEmpty = northWestPiece == null;
-
-			if (northWestLocationIsEmpty) {
-				listOfValidMoves.add(new PossibleMove(checkersPiece,
-						northWestRow, northWestColumn));
-			}
-			if (northEastLocationIsEmpty) {
-				listOfValidMoves.add(new PossibleMove(checkersPiece,
-						northEastRow, northEastColumn));
-			}
+			PossibleMove northEastMove = checkForAndReturnValidMoveInAdjustmentDirection(
+					allPiecesOnBoard, checkersPiece, -1, 1);
+			if (northEastMove != null)
+				listOfValidMoves.add(northEastMove);
 		}
 		if (!northIsForward || checkersPiece.isKing()) {
-			int southWestRow = row - 1;
-			int southWestColumn = column - 1;
-			int southEastRow = row - 1;
-			int southEastColumn = column + 1;
+			PossibleMove southWestMove = checkForAndReturnValidMoveInAdjustmentDirection(
+					allPiecesOnBoard, checkersPiece, 1, -1);
+			if (southWestMove != null)
+				listOfValidMoves.add(southWestMove);
 
-			CheckersPieceModel southWestPiece = getPieceAtLocation(
-					allPiecesOnBoard, southWestRow, southWestColumn);
-			CheckersPieceModel southEastPiece = getPieceAtLocation(
-					allPiecesOnBoard, southEastRow, southEastColumn);
-			boolean northEastLocationIsEmpty = southEastPiece == null;
-			boolean northWestLocationIsEmpty = southWestPiece == null;
-
-			if (northWestLocationIsEmpty) {
-				listOfValidMoves.add(new PossibleMove(checkersPiece,
-						southWestRow, southWestColumn));
-			}
-			if (northEastLocationIsEmpty) {
-				listOfValidMoves.add(new PossibleMove(checkersPiece,
-						southEastRow, southEastColumn));
-			}
+			PossibleMove southEastMove = checkForAndReturnValidMoveInAdjustmentDirection(
+					allPiecesOnBoard, checkersPiece, 1, 1);
+			if (southEastMove != null)
+				listOfValidMoves.add(southEastMove);
 		}
 		return listOfValidMoves;
+	}
+
+	private static PossibleMove checkForAndReturnValidMoveInAdjustmentDirection(
+			List<CheckersPieceModel> allPiecesOnBoard,
+			CheckersPieceModel checkersPiece, int rowAdjustment,
+			int columnAdjustment) {
+		int newRowLocation = checkersPiece.getRow() + rowAdjustment;
+		int newColumnLocation = checkersPiece.getColumn() + columnAdjustment;
+
+		boolean moveIsOnBoard = newRowLocation >= 0 && newRowLocation <= 7
+				&& newColumnLocation >= 0 && newColumnLocation <= 7;
+
+		if (moveIsOnBoard
+				&& locationIsUnoccupied(allPiecesOnBoard, checkersPiece,
+						newRowLocation, newColumnLocation)) {
+			return new PossibleMove(checkersPiece, newRowLocation,
+					newColumnLocation);
+		}
+		return null;
+	}
+
+	private static boolean locationIsUnoccupied(
+			List<CheckersPieceModel> allPiecesOnBoard,
+			CheckersPieceModel checkersPiece, int row, int column) {
+
+		CheckersPieceModel northWestPiece = getPieceAtLocation(
+				allPiecesOnBoard, row, column);
+		boolean locationIsEmpty = northWestPiece == null;
+		return locationIsEmpty;
 	}
 
 	private static CheckersPieceModel getPieceAtLocation(

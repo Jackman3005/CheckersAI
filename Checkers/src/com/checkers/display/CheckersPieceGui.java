@@ -14,9 +14,12 @@ public class CheckersPieceGui {
 	private int displayX;
 	private boolean isSelected;
 	private final CheckersPieceModel pieceModel;
+	private final CheckersPieceValidMovesHighlighter validMovesHighlighter;
 
-	public CheckersPieceGui(CheckersPieceModel pieceModel) {
+	public CheckersPieceGui(CheckersPieceModel pieceModel,
+			CheckersPieceValidMovesHighlighter validMovesHighlighter) {
 		this.pieceModel = pieceModel;
+		this.validMovesHighlighter = validMovesHighlighter;
 		this.isSelected = false;
 		setDisplayLocationBasedOnModel();
 	}
@@ -27,6 +30,8 @@ public class CheckersPieceGui {
 			graphics2D.setColor(Color.YELLOW);
 			graphics2D.setStroke(new BasicStroke(4));
 			graphics2D.drawOval(this.displayX, this.displayY, size, size);
+			this.validMovesHighlighter.drawValidMovesForCheckersPiece(
+					graphics2D, this.pieceModel);
 		} else {
 			setDisplayLocationBasedOnModel();
 		}
