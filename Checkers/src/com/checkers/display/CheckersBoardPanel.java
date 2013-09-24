@@ -12,6 +12,7 @@ import com.checkers.model.CheckersBoardObserverInterface;
 import com.checkers.model.CheckersPieceModel;
 
 public class CheckersBoardPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
 
 	private final class CheckersBoardRepaintingObserver implements
 			CheckersBoardObserverInterface {

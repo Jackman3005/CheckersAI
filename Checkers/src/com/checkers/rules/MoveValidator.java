@@ -32,10 +32,24 @@ public class MoveValidator {
 		List<CheckersPieceModel> piecesToCheck = getAllPiecesThatThePlayerControls(
 				allPiecesOnBoard, player);
 		ArrayList<PossibleMove> allValidMoves = new ArrayList<PossibleMove>();
+		boolean playerHasAJumpMoveAvailable = false;
 		for (CheckersPieceModel checkersPiece : piecesToCheck) {
-			allValidMoves.addAll(getAllValidMovesForASinglePiece(
-					allPiecesOnBoard, checkersPiece));
-
+			ArrayList<PossibleMove> allValidMovesForASinglePiece = getAllValidMovesForASinglePiece(
+					allPiecesOnBoard, checkersPiece);
+			allValidMoves.addAll(allValidMovesForASinglePiece);
+			for (PossibleMove possibleMove : allValidMovesForASinglePiece) {
+				if (possibleMove.isThisMoveAJump()) {
+					playerHasAJumpMoveAvailable = true;
+				}
+			}
+		}
+		if (playerHasAJumpMoveAvailable) {
+			for (PossibleMove possibleMove : new ArrayList<PossibleMove>(
+					allValidMoves)) {
+				if (!possibleMove.isThisMoveAJump()) {
+					allValidMoves.remove(possibleMove);
+				}
+			}
 		}
 		return allValidMoves;
 	}
