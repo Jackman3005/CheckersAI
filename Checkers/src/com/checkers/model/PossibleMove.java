@@ -50,5 +50,13 @@ public class PossibleMove {
 	public List<Point> getIntermediateLocations() {
 		return this.intermediateLocations;
 	}
+	
+	public boolean isThisMoveAJump(){
+		if (this.piecesThatWillBeCaptured.size()>0)
+			return true;
+		else
+			return false;
+		
+	}
 
 }
