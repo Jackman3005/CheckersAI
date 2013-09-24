@@ -45,9 +45,14 @@ public class MoveValidator {
 			CheckersPieceModel checkersPiece) {
 		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
 
+		// piece is removed from "allPiecesOnBoard" so that it cannot get in the
+		// way of itself, This allows for a king to do a full circle capturing
+		// four pieces and returning where it started
+		allPiecesOnBoard.remove(checkersPiece);
 		listOfValidMoves.addAll(getValidMovesTwoLocationsAway_JumpMoves(
 				allPiecesOnBoard, checkersPiece, Integer.MIN_VALUE,
-				Integer.MIN_VALUE));
+				Integer.MIN_VALUE, new ArrayList<CheckersPieceModel>()));
+		allPiecesOnBoard.add(checkersPiece);
 		if (listOfValidMoves.size() == 0) {
 			listOfValidMoves
 					.addAll(getValidMovesWithinOneLocationAway_NonJumpMoves(
@@ -60,7 +65,8 @@ public class MoveValidator {
 	private static List<PossibleMove> getValidMovesTwoLocationsAway_JumpMoves(
 			List<CheckersPieceModel> allPiecesOnBoard,
 			CheckersPieceModel checkersPiece, int rowPositionFromPreviousJump,
-			int columnPositionFromPreviousJump) {
+			int columnPositionFromPreviousJump,
+			List<CheckersPieceModel> piecesAlreadyCaptured) {
 		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
 		boolean northIsForward = checkersPiece.getPlayerToken().equals(
 				PlayerToken.PLAYER);
@@ -83,14 +89,19 @@ public class MoveValidator {
 				if (pieceAtNorthWestLocation != null
 						&& !pieceAtNorthWestLocation.getPlayerToken().equals(
 								checkersPiece.getPlayerToken())) {
-					PossibleMove northWestJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
-							allPiecesOnBoard, checkersPiece, -2, -2);
-					if (northWestJumpMove != null) {
-						listOfValidMoves
-								.addAll(checkForMultipleJumpMovesAndReturn(
-										allPiecesOnBoard, checkersPiece,
-										pieceAtNorthWestLocation,
-										northWestJumpMove, -2, -2));
+					if (!piecesAlreadyCaptured
+							.contains(pieceAtNorthWestLocation)) {
+						PossibleMove northWestJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+								allPiecesOnBoard, checkersPiece, -2, -2);
+						if (northWestJumpMove != null) {
+							piecesAlreadyCaptured.add(pieceAtNorthWestLocation);
+							listOfValidMoves
+									.addAll(checkForMultipleJumpMovesAndReturn(
+											allPiecesOnBoard, checkersPiece,
+											pieceAtNorthWestLocation,
+											northWestJumpMove, -2, -2,
+											piecesAlreadyCaptured));
+						}
 					}
 				}
 			}
@@ -101,14 +112,19 @@ public class MoveValidator {
 				if (pieceAtNorthEastLocation != null
 						&& !pieceAtNorthEastLocation.getPlayerToken().equals(
 								checkersPiece.getPlayerToken())) {
-					PossibleMove northEastJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
-							allPiecesOnBoard, checkersPiece, -2, 2);
-					if (northEastJumpMove != null) {
-						listOfValidMoves
-								.addAll(checkForMultipleJumpMovesAndReturn(
-										allPiecesOnBoard, checkersPiece,
-										pieceAtNorthEastLocation,
-										northEastJumpMove, -2, 2));
+					if (!piecesAlreadyCaptured
+							.contains(pieceAtNorthEastLocation)) {
+						PossibleMove northEastJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+								allPiecesOnBoard, checkersPiece, -2, 2);
+						if (northEastJumpMove != null) {
+							piecesAlreadyCaptured.add(pieceAtNorthEastLocation);
+							listOfValidMoves
+									.addAll(checkForMultipleJumpMovesAndReturn(
+											allPiecesOnBoard, checkersPiece,
+											pieceAtNorthEastLocation,
+											northEastJumpMove, -2, 2,
+											piecesAlreadyCaptured));
+						}
 					}
 				}
 			}
@@ -121,14 +137,19 @@ public class MoveValidator {
 				if (pieceAtSouthWestLocation != null
 						&& !pieceAtSouthWestLocation.getPlayerToken().equals(
 								checkersPiece.getPlayerToken())) {
-					PossibleMove southWestJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
-							allPiecesOnBoard, checkersPiece, 2, -2);
-					if (southWestJumpMove != null) {
-						listOfValidMoves
-								.addAll(checkForMultipleJumpMovesAndReturn(
-										allPiecesOnBoard, checkersPiece,
-										pieceAtSouthWestLocation,
-										southWestJumpMove, 2, -2));
+					if (!piecesAlreadyCaptured
+							.contains(pieceAtSouthWestLocation)) {
+						PossibleMove southWestJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+								allPiecesOnBoard, checkersPiece, 2, -2);
+						if (southWestJumpMove != null) {
+							piecesAlreadyCaptured.add(pieceAtSouthWestLocation);
+							listOfValidMoves
+									.addAll(checkForMultipleJumpMovesAndReturn(
+											allPiecesOnBoard, checkersPiece,
+											pieceAtSouthWestLocation,
+											southWestJumpMove, 2, -2,
+											piecesAlreadyCaptured));
+						}
 					}
 				}
 			}
@@ -140,14 +161,19 @@ public class MoveValidator {
 				if (pieceAtSouthEastLocation != null
 						&& !pieceAtSouthEastLocation.getPlayerToken().equals(
 								checkersPiece.getPlayerToken())) {
-					PossibleMove southEastJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
-							allPiecesOnBoard, checkersPiece, 2, 2);
-					if (southEastJumpMove != null) {
-						listOfValidMoves
-								.addAll(checkForMultipleJumpMovesAndReturn(
-										allPiecesOnBoard, checkersPiece,
-										pieceAtSouthEastLocation,
-										southEastJumpMove, 2, 2));
+					if (!piecesAlreadyCaptured
+							.contains(pieceAtSouthEastLocation)) {
+						PossibleMove southEastJumpMove = checkForAndReturnValidMoveInAdjustmentDirection(
+								allPiecesOnBoard, checkersPiece, 2, 2);
+						if (southEastJumpMove != null) {
+							piecesAlreadyCaptured.add(pieceAtSouthEastLocation);
+							listOfValidMoves
+									.addAll(checkForMultipleJumpMovesAndReturn(
+											allPiecesOnBoard, checkersPiece,
+											pieceAtSouthEastLocation,
+											southEastJumpMove, 2, 2,
+											piecesAlreadyCaptured));
+						}
 					}
 				}
 			}
@@ -161,7 +187,7 @@ public class MoveValidator {
 			CheckersPieceModel checkersPiece,
 			CheckersPieceModel pieceBeingJumped_AKACaptured,
 			PossibleMove previousJumpMove, int rowAdjustment,
-			int columnAdjustment) {
+			int columnAdjustment, List<CheckersPieceModel> piecesAlreadyCaptured) {
 
 		List<PossibleMove> listOfValidJumpMoves = new ArrayList<PossibleMove>();
 
@@ -174,7 +200,7 @@ public class MoveValidator {
 		}
 		List<PossibleMove> additionalJumps = getValidMovesTwoLocationsAway_JumpMoves(
 				allPiecesOnBoard, tempCheckersPiece, checkersPiece.getRow(),
-				checkersPiece.getColumn());
+				checkersPiece.getColumn(), piecesAlreadyCaptured);
 		if (additionalJumps.size() > 0)
 			for (PossibleMove possibleMove : additionalJumps) {
 				PossibleMove multiJumpMove = new PossibleMove(checkersPiece,
@@ -266,9 +292,9 @@ public class MoveValidator {
 			List<CheckersPieceModel> allPiecesOnBoard,
 			CheckersPieceModel checkersPiece, int row, int column) {
 
-		CheckersPieceModel northWestPiece = getPieceAtLocation(
+		CheckersPieceModel pieceAtLocation = getPieceAtLocation(
 				allPiecesOnBoard, row, column);
-		boolean locationIsEmpty = northWestPiece == null;
+		boolean locationIsEmpty = pieceAtLocation == null;
 		return locationIsEmpty;
 	}
 

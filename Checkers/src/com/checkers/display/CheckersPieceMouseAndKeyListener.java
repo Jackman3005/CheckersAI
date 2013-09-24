@@ -9,6 +9,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import com.checkers.model.CheckersBoardModel;
+import com.checkers.model.CheckersPieceModel;
 import com.checkers.model.PossibleMove;
 import com.checkers.rules.MoveValidator;
 
@@ -143,12 +144,15 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 	@Override
 	public void keyTyped(KeyEvent keyPress) {
 
-		// KeyStroke ctrlZKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-		// java.awt.event.InputEvent.CTRL_DOWN_MASK);
-
 		if (this.currentlySelectedPiece_WithRightClick != null) {
 			if (keyPress.getKeyChar() == 'k') {
-				this.currentlySelectedPiece_WithRightClick.getModel().kingMe();
+				CheckersPieceModel model = this.currentlySelectedPiece_WithRightClick
+						.getModel();
+				if (model.isKing()) {
+					model.undoKingMe();
+				} else {
+					model.kingMe();
+				}
 			}
 			if (keyPress.getKeyChar() == 'c') {
 				this.checkersBoardModel

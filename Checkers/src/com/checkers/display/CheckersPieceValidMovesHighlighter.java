@@ -38,8 +38,9 @@ public class CheckersPieceValidMovesHighlighter {
 			graphics2D.setStroke(dashed);
 			for (Point intermediateLocation : possibleMove
 					.getIntermediateLocations()) {
-				graphics2D.drawOval(intermediateLocation.x * size,
-						intermediateLocation.y * size, size, size);
+				graphics2D.drawOval(intermediateLocation.x * size + 10,
+						intermediateLocation.y * size + 10, size - 20,
+						size - 20);
 			}
 
 			graphics2D.setStroke(basicStroke);
