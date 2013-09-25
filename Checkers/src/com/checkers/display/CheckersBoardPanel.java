@@ -24,8 +24,8 @@ public class CheckersBoardPanel extends JPanel {
 
 	public static final int BOARD_SIZE = 8;
 	public static final int SQUARE_SIZE = 80;
-	private static final Color COLOR_ONE = Color.RED;
-	private static final Color COLOR_TWO = Color.BLACK;
+	private static final Color COLOR_ONE = new Color(206, 206, 206);
+	private static final Color COLOR_TWO = new Color(156, 156, 156);
 	private final ArrayList<CheckersPieceGui> checkersGuiPieces;
 	private final CheckersBoardModel checkersBoardModel;
 
@@ -49,15 +49,16 @@ public class CheckersBoardPanel extends JPanel {
 		this.checkersGuiPieces.clear();
 		CheckersPieceValidMovesHighlighter validMovesHighlighter = new CheckersPieceValidMovesHighlighter(
 				this.checkersBoardModel);
+		CheckersPieceCaptureAnimationDisplayer captureAnimator = new CheckersPieceCaptureAnimationDisplayer(
+				this);
 		for (CheckersPieceModel pieceModel : this.checkersBoardModel
 				.getPiecesOnBoard()) {
 			this.checkersGuiPieces.add(new CheckersPieceGui(pieceModel,
-					validMovesHighlighter));
+					validMovesHighlighter, captureAnimator));
 		}
 	}
 
 	private void repaintBoardBecauseModelChanged() {
-		buildGuiPiecesBasedOnModel();
 		this.revalidate();
 		this.repaint();
 	}

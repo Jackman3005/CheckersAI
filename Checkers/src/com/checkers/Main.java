@@ -5,6 +5,9 @@ import com.checkers.model.CheckersBoardModel;
 
 public class Main {
 
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		CheckersBoardModel checkersBoardModel = new CheckersBoardModel();
 

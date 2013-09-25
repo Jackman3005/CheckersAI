@@ -22,7 +22,6 @@ public class CheckersOptionsMenu extends JMenuBar {
 
 			@Override
 			public void run() {
-
 				CheckersBoardModel model = CheckersOptionsMenu.this.checkersBoardModel;
 				PlayerToken playerToMove = this.opponentMadeLastMove ? PlayerToken.PLAYER
 						: PlayerToken.OPPONENT;

@@ -1,11 +1,14 @@
 package com.checkers.model;
 
+import java.util.ArrayList;
+
 public class CheckersPieceModel {
 	private final PlayerToken playerToken;
 	private int row;
 	private int column;
 	private boolean isKing;
 	private boolean isCaptured;
+	private final ArrayList<CheckersPieceObserverInterface> observers;
 
 	public CheckersPieceModel(int row, int column, PlayerToken player) {
 		this.playerToken = player;
@@ -13,6 +16,7 @@ public class CheckersPieceModel {
 		this.column = column;
 		this.isKing = false;
 		this.isCaptured = false;
+		this.observers = new ArrayList<CheckersPieceObserverInterface>();
 	}
 
 	public int getColumn() {
@@ -44,6 +48,7 @@ public class CheckersPieceModel {
 	}
 
 	void capturePiece() {
+		notifyObserversPieceWasCaptured();
 		this.isCaptured = true;
 	}
 
@@ -66,10 +71,31 @@ public class CheckersPieceModel {
 
 	public void undoCapturePiece() {
 		this.isCaptured = false;
+		notifyObserversPieceWasUnCaptured();
 	}
 
 	public void undoKingMe() {
 		this.isKing = false;
+	}
+
+	public void addObserver(CheckersPieceObserverInterface observer) {
+		this.observers.add(observer);
+	}
+
+	public void removeObserver(CheckersPieceObserverInterface observer) {
+		this.observers.remove(observer);
+	}
+
+	private void notifyObserversPieceWasCaptured() {
+		for (CheckersPieceObserverInterface observer : this.observers) {
+			observer.pieceCaptured();
+		}
+	}
+
+	private void notifyObserversPieceWasUnCaptured() {
+		for (CheckersPieceObserverInterface observer : this.observers) {
+			observer.pieceUnCaptured();
+		}
 	}
 
 }

@@ -103,9 +103,12 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 
 	private CheckersPieceGui getPieceAtLocation(Point boardLocation) {
 		for (CheckersPieceGui piece : this.pieces) {
-			if (piece.getModel().getColumn() == boardLocation.x) {
-				if (piece.getModel().getRow() == boardLocation.y) {
-					return piece;
+			CheckersPieceModel model = piece.getModel();
+			if (model.getColumn() == boardLocation.x) {
+				if (model.getRow() == boardLocation.y) {
+					if (!model.isCaptured()) {
+						return piece;
+					}
 				}
 			}
 		}
