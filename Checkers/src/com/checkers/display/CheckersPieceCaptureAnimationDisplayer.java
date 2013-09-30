@@ -66,8 +66,6 @@ public class CheckersPieceCaptureAnimationDisplayer {
 	}
 
 	public void animateCapture(CheckersPieceGui checkersPiece) {
-		int currentWidth = CheckersBoardPanel.SQUARE_SIZE;
-		int currentHieght = CheckersBoardPanel.SQUARE_SIZE;
 		Timer animator = new Timer();
 		TimerTask animatedStep1 = new WidthShrinker(checkersPiece,
 				CheckersBoardPanel.SQUARE_SIZE);
@@ -75,9 +73,10 @@ public class CheckersPieceCaptureAnimationDisplayer {
 				CheckersBoardPanel.SQUARE_SIZE);
 
 		int timeBetweenEachStepInAnimation1 = 5;
-		int timeToRunAnimation1 = (80 - 15) * timeBetweenEachStepInAnimation1;
+		int timeTakenToRunAnimation1 = (CheckersBoardPanel.SQUARE_SIZE - 15)
+				* timeBetweenEachStepInAnimation1;
 
 		animator.schedule(animatedStep1, 0, timeBetweenEachStepInAnimation1);
-		animator.schedule(animatedStep2, timeToRunAnimation1, 1);
+		animator.schedule(animatedStep2, timeTakenToRunAnimation1, 1);
 	}
 }

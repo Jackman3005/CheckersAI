@@ -9,7 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import com.checkers.ArtificialIntelligence.SmartMoveMaker;
+import com.checkers.artificialIntelligence.SmartMoveMaker;
 import com.checkers.model.CheckersBoardModel;
 import com.checkers.model.PlayerToken;
 import com.checkers.model.PossibleMove;

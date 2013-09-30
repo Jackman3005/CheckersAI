@@ -30,8 +30,6 @@ public class CheckersPieceGui {
 		}
 	}
 
-	private static final Color PLAYER_COLOR = new Color(232, 170, 26);
-	private static final Color OPPONENT_COLOR = new Color(118, 214, 197);
 	private int displayY;
 	private int displayX;
 	private boolean isSelected;
@@ -68,7 +66,7 @@ public class CheckersPieceGui {
 		} else if (!this.getModel().isCaptured()) {
 			setDisplayLocationBasedOnModel();
 		}
-		BufferedImage pieceImage = Images.singleton.crown;
+		BufferedImage pieceImage;
 		if (this.pieceModel.getPlayerToken().equals(PlayerToken.OPPONENT)) {
 			pieceImage = this.pieceModel.isKing() ? Images.singleton.blackKingPiece
 					: Images.singleton.blackPiece;
