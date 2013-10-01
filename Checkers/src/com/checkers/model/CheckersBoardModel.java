@@ -9,9 +9,11 @@ public class CheckersBoardModel {
 	private ArrayList<CheckersPieceModel> piecesOnBoard;
 	private final List<CheckersBoardObserverInterface> observers;
 	private final Stack<UndoableMove> undoMoveStack;
+	private int[][] spaceNotation; 
 
 	public CheckersBoardModel() {
 		initializeBoard();
+		initializeNotation();
 		this.observers = new ArrayList<CheckersBoardObserverInterface>();
 		this.undoMoveStack = new Stack<UndoableMove>();
 	}
@@ -34,6 +36,21 @@ public class CheckersBoardModel {
 		}
 	}
 
+	private void initializeNotation(){
+		int spaceNumber=1;
+		for (int column=0; column<8;column++){
+			for (int row =0; row<8; row++){
+				if((column+row)%2==1){
+					spaceNotation[column][row]=spaceNumber;
+					spaceNumber++;
+				}
+				else 
+					spaceNotation[column][row]=0;
+					
+			}
+		}
+	}
+	
 	public boolean capturePiece(CheckersPieceModel pieceToCapture) {
 		pieceToCapture.capturePiece();
 		boolean pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy = this.piecesOnBoard
@@ -143,5 +160,26 @@ public class CheckersBoardModel {
 
 	public List<CheckersPieceModel> getPiecesOnBoard() {
 		return this.piecesOnBoard;
+	}
+	
+	public int getNotation(CheckersPieceModel piece){
+				
+		return spaceNotation[piece.getColumn()][piece.getRow()];
+	}
+	
+	public CheckersPieceModel getPieceFromNotation(int spaceNumber){
+		for (int column=0; column<8;column++){
+			for (int row =0; row<8; row++){
+				if(spaceNumber==spaceNotation[column][row]){
+					List <CheckersPieceModel> listOfPieces =this.getPiecesOnBoard();
+					for (int i=0; i<listOfPieces.size(); i++){
+						if((listOfPieces.get(i).getColumn()==column)&&
+								(listOfPieces.get(i).getRow()==row))
+							return listOfPieces.get(i);
+					}
+				}					
+			}
+		}
+		return null;
 	}
 }
