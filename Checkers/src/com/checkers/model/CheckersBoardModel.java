@@ -15,7 +15,7 @@ public class CheckersBoardModel {
 
 	public CheckersBoardModel() {
 		initializeBoard();
-		// initializeNotation();
+		initializeNotation();
 		this.observers = new ArrayList<CheckersBoardObserverInterface>();
 		this.undoMoveStack = new Stack<UndoableMove>();
 		this.turnCount = 0;
@@ -41,14 +41,15 @@ public class CheckersBoardModel {
 	}
 
 	private void initializeNotation() {
+		this.spaceNotation = new int[8][8];
 		int spaceNumber = 1;
 		for (int column = 0; column < 8; column++) {
 			for (int row = 0; row < 8; row++) {
+				this.spaceNotation[column][row] = 0;
 				if ((column + row) % 2 == 1) {
 					this.spaceNotation[column][row] = spaceNumber;
 					spaceNumber++;
-				} else
-					this.spaceNotation[column][row] = 0;
+				}
 
 			}
 		}
@@ -67,11 +68,13 @@ public class CheckersBoardModel {
 			return false;
 		this.turnCount++;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
+		System.out.print(getNotation(pieceToMove) + "-");
 		int rowToMoveTo = moveToMake.getNewRowLocation();
 
 		boolean pieceShouldBecomeKing = false;
 		if (rowToMoveTo == 0
-				&& pieceToMove.getPlayerToken().equals(PlayerToken.BOTTOM_PLAYER)) {
+				&& pieceToMove.getPlayerToken().equals(
+						PlayerToken.BOTTOM_PLAYER)) {
 			pieceShouldBecomeKing = true;
 		} else if (rowToMoveTo == 7
 				&& pieceToMove.getPlayerToken().equals(PlayerToken.TOP_PLAYER)) {
@@ -86,7 +89,7 @@ public class CheckersBoardModel {
 		}
 		pieceToMove.setRow(rowToMoveTo);
 		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
-
+		System.out.println(getNotation(pieceToMove) + ", ");
 		for (CheckersPieceModel checkersPiece : moveToMake
 				.getPiecesThatWillBeCaptured()) {
 			capturePiece(checkersPiece);
@@ -100,7 +103,6 @@ public class CheckersBoardModel {
 
 	public UndoableMove undoLastMove() {
 		if (!this.undoMoveStack.isEmpty()) {
-			this.turnCount--;
 			UndoableMove lastMoveMade = this.undoMoveStack.pop();
 
 			PossibleMove moveToUndo = lastMoveMade.getMoveToUndo();
@@ -170,7 +172,7 @@ public class CheckersBoardModel {
 
 	public int getNotation(CheckersPieceModel piece) {
 
-		return this.spaceNotation[piece.getColumn()][piece.getRow()];
+		return this.spaceNotation[piece.getRow()][piece.getColumn()];
 	}
 
 	public CheckersPieceModel getPieceFromNotation(int spaceNumber) {
@@ -190,11 +192,12 @@ public class CheckersBoardModel {
 		return null;
 	}
 
+	public int getLastTurnThatAPieceWasCaptured() {
+		return this.lastTurnThatAPieceWasCaptured;
+	}
+
 	public int getTurnCount() {
 		return this.turnCount;
 	}
 
-	public int getLastTurnThatAPieceWasCaptured() {
-		return this.lastTurnThatAPieceWasCaptured;
-	}
 }
