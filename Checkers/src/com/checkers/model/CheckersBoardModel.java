@@ -37,16 +37,16 @@ public class CheckersBoardModel {
 	}
 
 	private void initializeNotation(){
+		spaceNotation=new int[8][8];
 		int spaceNumber=1;
 		for (int column=0; column<8;column++){
 			for (int row =0; row<8; row++){
+				spaceNotation[column][row]=0;
 				if((column+row)%2==1){
 					spaceNotation[column][row]=spaceNumber;
 					spaceNumber++;
 				}
-				else 
-					spaceNotation[column][row]=0;
-					
+									
 			}
 		}
 	}
@@ -63,6 +63,7 @@ public class CheckersBoardModel {
 		if (moveToMake == null)
 			return false;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
+		System.out.print(getNotation(pieceToMove)+"-");
 		int rowToMoveTo = moveToMake.getNewRowLocation();
 
 		boolean pieceShouldBecomeKing = false;
@@ -82,7 +83,7 @@ public class CheckersBoardModel {
 		}
 		pieceToMove.setRow(rowToMoveTo);
 		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
-
+		System.out.println(getNotation(pieceToMove)+", ");
 		for (CheckersPieceModel checkersPiece : moveToMake
 				.getPiecesThatWillBeCaptured()) {
 			capturePiece(checkersPiece);
@@ -182,4 +183,6 @@ public class CheckersBoardModel {
 		}
 		return null;
 	}
+	
+	
 }
