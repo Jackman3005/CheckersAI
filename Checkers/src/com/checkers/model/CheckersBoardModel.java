@@ -165,7 +165,7 @@ public class CheckersBoardModel {
 	
 	public int getNotation(CheckersPieceModel piece){
 				
-		return spaceNotation[piece.getColumn()][piece.getRow()];
+		return spaceNotation[piece.getRow()][piece.getColumn()];
 	}
 	
 	public CheckersPieceModel getPieceFromNotation(int spaceNumber){
