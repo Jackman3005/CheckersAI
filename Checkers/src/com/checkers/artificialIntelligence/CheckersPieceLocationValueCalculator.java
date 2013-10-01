@@ -37,7 +37,7 @@ public class CheckersPieceLocationValueCalculator {
 	}
 
 	public int piecesValueAtLocation(CheckersPieceModel checkersPiece) {
-		int piecesBaseValue = checkersPiece.isKing() ? 5 : 3;
+		int piecesBaseValue = checkersPiece.isKing() ? 7 : 3;
 		Integer valueOfLocation = this.mapOfLocationValues.get(
 				checkersPiece.getRow()).get(checkersPiece.getColumn());
 
@@ -51,9 +51,9 @@ public class CheckersPieceLocationValueCalculator {
 			mapOfLocationValues.put(i, mapRepresentingARowOnTheCheckerBoard);
 		}
 
-		mapOfLocationValues.get(0).put(1, 12);
-		mapOfLocationValues.get(0).put(3, 12);
-		mapOfLocationValues.get(0).put(5, 12);
+		mapOfLocationValues.get(0).put(1, 10);
+		mapOfLocationValues.get(0).put(3, 10);
+		mapOfLocationValues.get(0).put(5, 10);
 		mapOfLocationValues.get(0).put(7, 8);
 
 		mapOfLocationValues.get(1).put(0, 10);
@@ -87,8 +87,8 @@ public class CheckersPieceLocationValueCalculator {
 		mapOfLocationValues.get(6).put(7, 10);
 
 		mapOfLocationValues.get(7).put(0, 8);
-		mapOfLocationValues.get(7).put(2, 12);
-		mapOfLocationValues.get(7).put(4, 12);
-		mapOfLocationValues.get(7).put(6, 12);
+		mapOfLocationValues.get(7).put(2, 10);
+		mapOfLocationValues.get(7).put(4, 10);
+		mapOfLocationValues.get(7).put(6, 10);
 	}
 }

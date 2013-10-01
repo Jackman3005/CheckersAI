@@ -98,4 +98,9 @@ public class CheckersPieceModel {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return this.playerToken + " Piece at Row: " + this.row + " Col: "
+				+ this.column;
+	}
 }

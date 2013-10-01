@@ -20,6 +20,10 @@ public class CheckersBoardPanel extends JPanel {
 		public void boardChanged() {
 			CheckersBoardPanel.this.repaintBoardBecauseModelChanged();
 		}
+
+		@Override
+		public void turnHasEnded() {
+		}
 	}
 
 	public static final int BOARD_SIZE = 8;

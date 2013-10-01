@@ -15,32 +15,58 @@ public class SmartMoveMaker {
 			List<CheckersPieceModel> allCheckersPieces, PlayerToken playerToken) {
 		List<PossibleMove> allValidMovesForPlayer = MoveValidator
 				.getAllValidMovesForPlayer(allCheckersPieces, playerToken);
-		PossibleMove bestPossibleMove = null;
 		int bestBoardValue = Integer.MIN_VALUE;
+		System.out.println("PlayerToMove: " + playerToken);
+		List<PossibleMove> listOfMovesEqualInWeight = new ArrayList<PossibleMove>();
 		for (PossibleMove possibleMove : allValidMovesForPlayer) {
 			List<CheckersPieceModel> possibleBoardLayout = CheckersBoardModel
 					.emulateMovingAPieceAndReturnCopyOfPiecesOnBoard(
 							allCheckersPieces, possibleMove);
+			testOutputMethod(possibleMove);
 			int valueOfBoardAfterSevenMoreTurns = getValueOfMoveUsingMinMaxSearchForTheSpecifiedNumberOfTurns(
 					possibleBoardLayout, getOppositePlayerToken(playerToken),
 					7, false);
 			if (valueOfBoardAfterSevenMoreTurns > bestBoardValue) {
+				listOfMovesEqualInWeight.clear();
+				listOfMovesEqualInWeight.add(possibleMove);
 				bestBoardValue = valueOfBoardAfterSevenMoreTurns;
-				bestPossibleMove = possibleMove;
+			} else if (valueOfBoardAfterSevenMoreTurns == bestBoardValue) {
+				listOfMovesEqualInWeight.add(possibleMove);
 			}
 		}
-		return bestPossibleMove;
+		int numberOfEquallyGoodMoves = listOfMovesEqualInWeight.size();
+		if (numberOfEquallyGoodMoves > 0) {
+			int moveToGet = (int) (Math.random() * numberOfEquallyGoodMoves);
+			return listOfMovesEqualInWeight.get(moveToGet);
+		}
+		return null;
 
+	}
+
+	private static void testOutputMethod(PossibleMove possibleMove) {
+		CheckersBoardModel deleteMe = new CheckersBoardModel();
+		int pieceToMove = deleteMe.getNotation(possibleMove.getPieceToMove()
+				.getRow(), possibleMove.getPieceToMove().getColumn());
+		int locationToMoveTo = deleteMe.getNotation(
+				possibleMove.getNewRowLocation(),
+				possibleMove.getNewColumnLocation());
+		System.out.println("Move Being Investigated: " + pieceToMove + "-"
+				+ locationToMoveTo);
 	}
 
 	private static int getValueOfMoveUsingMinMaxSearchForTheSpecifiedNumberOfTurns(
 			List<CheckersPieceModel> possibleBoardLayout,
 			PlayerToken playerToken, int numberOfTurnsToCheck,
 			boolean isPlayersTurn) {
+		List<CheckersPieceModel> bestBoardLayoutForPlayer = new ArrayList<CheckersPieceModel>();
+
 		List<PossibleMove> allValidMovesForPlayer = MoveValidator
 				.getAllValidMovesForPlayer(possibleBoardLayout, playerToken);
 
-		List<CheckersPieceModel> bestBoardLayoutForPlayer = new ArrayList<CheckersPieceModel>();
+		if (allValidMovesForPlayer.size() == 0) {
+			return isPlayersTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		}
+
 		int bestValueForBoard = Integer.MIN_VALUE;
 		for (PossibleMove possibleMove : allValidMovesForPlayer) {
 			List<CheckersPieceModel> newPossibleBoardLayout = CheckersBoardModel
@@ -54,18 +80,24 @@ public class SmartMoveMaker {
 				bestBoardLayoutForPlayer = newPossibleBoardLayout;
 			}
 		}
-
-		if (numberOfTurnsToCheck > 1) {
+		if (numberOfTurnsToCheck > 1 && bestValueForBoard != Integer.MIN_VALUE) {
 			PlayerToken playerForNextTurn = getOppositePlayerToken(playerToken);
 			return getValueOfMoveUsingMinMaxSearchForTheSpecifiedNumberOfTurns(
 					bestBoardLayoutForPlayer, playerForNextTurn,
 					--numberOfTurnsToCheck, !isPlayersTurn);
 		} else {
-			PlayerToken playerOfLastTurn = isPlayersTurn ? playerToken
+			PlayerToken playerWeAreTryingToHelp = isPlayersTurn ? playerToken
 					: getOppositePlayerToken(playerToken);
-			return CheckersPieceLocationValueCalculator.singleton
+			int valueOfBoardFromPerspectiveOfPlayer = CheckersPieceLocationValueCalculator.singleton
 					.getValueOfBoardFromPerspectiveOfPlayer(
-							bestBoardLayoutForPlayer, playerOfLastTurn);
+							bestBoardLayoutForPlayer, playerWeAreTryingToHelp);
+			if (!isPlayersTurn && bestValueForBoard == Integer.MIN_VALUE) {
+				valueOfBoardFromPerspectiveOfPlayer = Integer.MAX_VALUE;
+			}
+			System.out.println("ValueOfPossibleTurn: "
+					+ valueOfBoardFromPerspectiveOfPlayer + " for player: "
+					+ playerWeAreTryingToHelp);
+			return valueOfBoardFromPerspectiveOfPlayer;
 		}
 
 	}

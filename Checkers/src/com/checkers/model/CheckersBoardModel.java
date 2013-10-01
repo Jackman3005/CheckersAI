@@ -1,5 +1,6 @@
 package com.checkers.model;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -66,20 +67,16 @@ public class CheckersBoardModel {
 	public boolean actuallyMovePiece(PossibleMove moveToMake) {
 		if (moveToMake == null)
 			return false;
-		this.turnCount++;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
-		System.out.print(getNotation(pieceToMove) + "-");
+		System.out.print(getNotation(moveToMake.getPieceToMove()) + "-");
 		int rowToMoveTo = moveToMake.getNewRowLocation();
-
-		boolean pieceShouldBecomeKing = false;
-		if (rowToMoveTo == 0
-				&& pieceToMove.getPlayerToken().equals(
-						PlayerToken.BOTTOM_PLAYER)) {
-			pieceShouldBecomeKing = true;
-		} else if (rowToMoveTo == 7
-				&& pieceToMove.getPlayerToken().equals(PlayerToken.TOP_PLAYER)) {
-			pieceShouldBecomeKing = true;
+		List<Point> intermediateLocations = moveToMake
+				.getIntermediateLocations();
+		for (Point point : intermediateLocations) {
+			System.out.print(this.spaceNotation[point.y][point.x] + "-");
 		}
+		boolean pieceShouldBecomeKing = shouldPieceBecomeKing(
+				pieceToMove.getPlayerToken(), rowToMoveTo);
 		UndoableMove undoableMoveToRevertThisMove = new UndoableMove(
 				moveToMake, pieceToMove.getRow(), pieceToMove.getColumn(),
 				pieceShouldBecomeKing);
@@ -97,12 +94,26 @@ public class CheckersBoardModel {
 		}
 
 		this.undoMoveStack.push(undoableMoveToRevertThisMove);
+		this.turnCount++;
 		notifyObserversThatTheBoardChanged();
+		notifyObserversThatATurnHasEnded();
 		return this.piecesOnBoard.contains(pieceToMove);
+
+	}
+
+	private static boolean shouldPieceBecomeKing(PlayerToken player,
+			int rowToMoveTo) {
+		if (rowToMoveTo == 0 && player.equals(PlayerToken.BOTTOM_PLAYER)) {
+			return true;
+		} else if (rowToMoveTo == 7 && player.equals(PlayerToken.TOP_PLAYER)) {
+			return true;
+		}
+		return false;
 	}
 
 	public UndoableMove undoLastMove() {
 		if (!this.undoMoveStack.isEmpty()) {
+			this.turnCount--;
 			UndoableMove lastMoveMade = this.undoMoveStack.pop();
 
 			PossibleMove moveToUndo = lastMoveMade.getMoveToUndo();
@@ -129,23 +140,32 @@ public class CheckersBoardModel {
 			List<CheckersPieceModel> allPiecesOnBoard,
 			PossibleMove moveToEmulate) {
 		List<CheckersPieceModel> copyOfPiecesOnBoardWithMoveEmulated = new ArrayList<CheckersPieceModel>();
+		List<CheckersPieceModel> piecesThatWillBeCapturedBecauseOfThisMove = new ArrayList<CheckersPieceModel>();
 		for (CheckersPieceModel checkersPieceModel : allPiecesOnBoard) {
 			if (checkersPieceModel.equals(moveToEmulate.getPieceToMove())) {
+				PlayerToken playerToken = moveToEmulate.getPieceToMove()
+						.getPlayerToken();
 				CheckersPieceModel movedCheckerPieceCopy = new CheckersPieceModel(
 						moveToEmulate.getNewRowLocation(),
-						moveToEmulate.getNewColumnLocation(), moveToEmulate
-								.getPieceToMove().getPlayerToken());
+						moveToEmulate.getNewColumnLocation(), playerToken);
+				if (shouldPieceBecomeKing(playerToken,
+						moveToEmulate.getNewRowLocation())
+						|| moveToEmulate.getPieceToMove().isKing()) {
+					movedCheckerPieceCopy.kingMe();
+				}
+				piecesThatWillBeCapturedBecauseOfThisMove.addAll(moveToEmulate
+						.getPiecesThatWillBeCaptured());
 				copyOfPiecesOnBoardWithMoveEmulated.add(movedCheckerPieceCopy);
-			} else {
-				// We may not actually have to make a copy of the pieces that
-				// do not move. Depends on how we implement our AI. If we don't
-				// need to copy unmoved pieces then we could save a lot of
-				// memory by not copying them lol
-
-				CheckersPieceModel copyOfCheckersPieceModel = CheckersPieceModel
+			}
+		}
+		for (CheckersPieceModel checkersPieceModel : allPiecesOnBoard) {
+			if (!checkersPieceModel.equals(moveToEmulate.getPieceToMove())
+					&& !piecesThatWillBeCapturedBecauseOfThisMove
+							.contains(checkersPieceModel)) {
+				CheckersPieceModel copyOfCheckersPieceModel_MayBeUneccessary = CheckersPieceModel
 						.copy(checkersPieceModel);
 				copyOfPiecesOnBoardWithMoveEmulated
-						.add(copyOfCheckersPieceModel);
+						.add(copyOfCheckersPieceModel_MayBeUneccessary);
 			}
 		}
 
@@ -155,6 +175,12 @@ public class CheckersBoardModel {
 	private void notifyObserversThatTheBoardChanged() {
 		for (CheckersBoardObserverInterface observer : this.observers) {
 			observer.boardChanged();
+		}
+	}
+
+	private void notifyObserversThatATurnHasEnded() {
+		for (CheckersBoardObserverInterface observer : this.observers) {
+			observer.turnHasEnded();
 		}
 	}
 
@@ -173,6 +199,10 @@ public class CheckersBoardModel {
 	public int getNotation(CheckersPieceModel piece) {
 
 		return this.spaceNotation[piece.getRow()][piece.getColumn()];
+	}
+
+	public int getNotation(int row, int column) {
+		return this.spaceNotation[row][column];
 	}
 
 	public CheckersPieceModel getPieceFromNotation(int spaceNumber) {

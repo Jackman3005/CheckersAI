@@ -11,6 +11,10 @@ public class AutomatedCheckersGame {
 			CheckersBoardObserverInterface {
 		@Override
 		public void boardChanged() {
+		}
+
+		@Override
+		public void turnHasEnded() {
 			if (AutomatedCheckersGame.this.playerToMakeMovesFor != null) {
 				if (AutomatedCheckersGame.this.theAutomatedPlayerStartedOnAnEvenTurn
 						&& AutomatedCheckersGame.this.checkersBoardModel
@@ -46,7 +50,7 @@ public class AutomatedCheckersGame {
 					- AutomatedCheckersGame.this.checkersBoardModel
 							.getLastTurnThatAPieceWasCaptured();
 			if (!aCheckersPieceWasMovedThisTurn
-					|| numberOfTurnsSinceAPieceWasCapture > 40) {
+					|| numberOfTurnsSinceAPieceWasCapture > 50) {
 				this.cancel();
 			}
 		}
@@ -54,7 +58,7 @@ public class AutomatedCheckersGame {
 
 	private final CheckersBoardModel checkersBoardModel;
 	private final Timer MOVE_MAKER = new Timer();
-	private final int TIME_BETWEEN_TURNS = 400;
+	private final int TIME_BETWEEN_TURNS = 200;
 	private PlayerToken playerToMakeMovesFor = null;
 	private boolean theAutomatedPlayerStartedOnAnEvenTurn;
 
