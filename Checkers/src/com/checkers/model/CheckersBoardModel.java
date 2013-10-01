@@ -73,7 +73,7 @@ public class CheckersBoardModel {
 		int rowToMoveTo = moveToMake.getNewRowLocation();
 		List<Point> intermediateLocations = moveToMake.getIntermediateLocations();
 		for (Point point : intermediateLocations) {
-			System.out.print(spaceNotation[point.x][point.y]+"-");
+			System.out.print(spaceNotation[point.y][point.x]+"-");
 		}
 		boolean pieceShouldBecomeKing = false;
 		if (rowToMoveTo == 0
