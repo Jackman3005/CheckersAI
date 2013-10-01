@@ -1,5 +1,6 @@
 package com.checkers.model;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -68,9 +69,12 @@ public class CheckersBoardModel {
 			return false;
 		this.turnCount++;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
-		System.out.print(getNotation(pieceToMove) + "-");
+		System.out.print(getNotation(moveToMake.getPieceToMove()) + "-");
 		int rowToMoveTo = moveToMake.getNewRowLocation();
-
+		List<Point> intermediateLocations = moveToMake.getIntermediateLocations();
+		for (Point point : intermediateLocations) {
+			System.out.print(spaceNotation[point.x][point.y]+"-");
+		}
 		boolean pieceShouldBecomeKing = false;
 		if (rowToMoveTo == 0
 				&& pieceToMove.getPlayerToken().equals(
@@ -99,6 +103,8 @@ public class CheckersBoardModel {
 		this.undoMoveStack.push(undoableMoveToRevertThisMove);
 		notifyObserversThatTheBoardChanged();
 		return this.piecesOnBoard.contains(pieceToMove);
+		
+	
 	}
 
 	public UndoableMove undoLastMove() {
@@ -173,6 +179,10 @@ public class CheckersBoardModel {
 	public int getNotation(CheckersPieceModel piece) {
 
 		return this.spaceNotation[piece.getRow()][piece.getColumn()];
+	}
+	
+	public int getNotation(int row, int column){
+		return spaceNotation[row][column];
 	}
 
 	public CheckersPieceModel getPieceFromNotation(int spaceNumber) {
