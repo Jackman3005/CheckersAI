@@ -18,9 +18,9 @@ public class MoveValidatorTest extends AssertHelper {
 		ArrayList<CheckersPieceModel> allPiecesOnBoard = new ArrayList<CheckersPieceModel>();
 
 		CheckersPieceModel pieceToCheck = new CheckersPieceModel(2, 2,
-				PlayerToken.OPPONENT);
+				PlayerToken.TOP_PLAYER);
 		CheckersPieceModel pieceToCapture = new CheckersPieceModel(3, 3,
-				PlayerToken.PLAYER);
+				PlayerToken.BOTTOM_PLAYER);
 
 		allPiecesOnBoard.add(pieceToCheck);
 		allPiecesOnBoard.add(pieceToCapture);
@@ -41,16 +41,16 @@ public class MoveValidatorTest extends AssertHelper {
 		ArrayList<CheckersPieceModel> allPiecesOnBoard = new ArrayList<CheckersPieceModel>();
 
 		CheckersPieceModel pieceToCheck = new CheckersPieceModel(4, 3,
-				PlayerToken.PLAYER);
+				PlayerToken.BOTTOM_PLAYER);
 		pieceToCheck.kingMe();
 		CheckersPieceModel pieceToCapture1 = new CheckersPieceModel(3, 2,
-				PlayerToken.OPPONENT);
+				PlayerToken.TOP_PLAYER);
 		CheckersPieceModel pieceToCapture2 = new CheckersPieceModel(1, 2,
-				PlayerToken.OPPONENT);
+				PlayerToken.TOP_PLAYER);
 		CheckersPieceModel pieceToCapture3 = new CheckersPieceModel(3, 4,
-				PlayerToken.OPPONENT);
+				PlayerToken.TOP_PLAYER);
 		CheckersPieceModel pieceToCapture4 = new CheckersPieceModel(1, 4,
-				PlayerToken.OPPONENT);
+				PlayerToken.TOP_PLAYER);
 
 		allPiecesOnBoard.add(pieceToCheck);
 		allPiecesOnBoard.add(pieceToCapture1);

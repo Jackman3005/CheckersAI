@@ -2,62 +2,51 @@ package com.checkers.display;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import com.checkers.artificialIntelligence.SmartMoveMaker;
+import com.checkers.model.AutomatedCheckersGame;
 import com.checkers.model.CheckersBoardModel;
 import com.checkers.model.PlayerToken;
-import com.checkers.model.PossibleMove;
 
 public class CheckersOptionsMenu extends JMenuBar {
 	private final class EmulateGameActionListener implements ActionListener {
-		private final class EmulatedCheckersGameMoveMakerTask extends TimerTask {
-
-			boolean opponentMadeLastMove = false;
-
-			@Override
-			public void run() {
-				CheckersBoardModel model = CheckersOptionsMenu.this.checkersBoardModel;
-				PlayerToken playerToMove = this.opponentMadeLastMove ? PlayerToken.PLAYER
-						: PlayerToken.OPPONENT;
-				this.opponentMadeLastMove = playerToMove
-						.equals(PlayerToken.OPPONENT);
-
-				PossibleMove bestMoveToMakeForPlayer = SmartMoveMaker
-						.getBestMoveToMakeForPlayer(model.getPiecesOnBoard(),
-								playerToMove);
-				boolean aCheckersPieceWasMovedThisTurn = model
-						.actuallyMovePiece(bestMoveToMakeForPlayer);
-				if (!aCheckersPieceWasMovedThisTurn) {
-					this.cancel();
-				}
-			}
-		}
-
-		private final Timer MOVE_MAKER = new Timer();
-		private final int TIME_BETWEEN_TURNS = 400;
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			EmulatedCheckersGameMoveMakerTask moveMakerTask = new EmulatedCheckersGameMoveMakerTask();
-			this.MOVE_MAKER.schedule(moveMakerTask, 0, this.TIME_BETWEEN_TURNS);
+			AutomatedCheckersGame automatedCheckersGame = new AutomatedCheckersGame(
+					CheckersOptionsMenu.this.checkersBoardModel);
+			automatedCheckersGame.startFullyEmulatedGame();
 		}
 	}
 
-	private final class PerformComputerMoveActionListener implements
+	private final class PerformMovesPlayerActionListener implements
 			ActionListener {
+		private final PlayerToken playerToMakeMovesFor;
+		private final JCheckBoxMenuItem checkBox;
+		private final AutomatedCheckersGame automatedCheckersGame;
+
+		PerformMovesPlayerActionListener(PlayerToken playerToMakeMovesFor,
+				JCheckBoxMenuItem checkBox) {
+			this.playerToMakeMovesFor = playerToMakeMovesFor;
+			this.checkBox = checkBox;
+			this.automatedCheckersGame = new AutomatedCheckersGame(
+					CheckersOptionsMenu.this.checkersBoardModel);
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			CheckersBoardModel model = CheckersOptionsMenu.this.checkersBoardModel;
-			PossibleMove bestMoveToMakeForOpponent = SmartMoveMaker
-					.getBestMoveToMakeForPlayer(model.getPiecesOnBoard(),
-							PlayerToken.OPPONENT);
-			model.actuallyMovePiece(bestMoveToMakeForOpponent);
+			if (this.checkBox.isSelected()) {
+				this.automatedCheckersGame
+						.startMakingMovesForPlayerWhenItsTheirTurn(this.playerToMakeMovesFor);
+			} else {
+				this.automatedCheckersGame
+						.stopMakingMovesForPlayerWhenItsTheirTurn();
+
+			}
 		}
 	}
 
@@ -70,13 +59,28 @@ public class CheckersOptionsMenu extends JMenuBar {
 		JMenu aIMenu = new JMenu("Artificial Intelligence");
 		aIMenu.setMnemonic('a');
 
-		JMenuItem performComputerMove = createPerformComputerMoveMenuItem();
+		JCheckBoxMenuItem automateTopPlayersMoves = createAutomatePlayerMovesCheckbox(
+				PlayerToken.TOP_PLAYER, "Automate Top Player");
+		JCheckBoxMenuItem automateBottomPlayersMoves = createAutomatePlayerMovesCheckbox(
+				PlayerToken.BOTTOM_PLAYER, "Automate Bottom Player");
 		JMenuItem emulateGame = createEmulateGameMenuItem();
 
-		aIMenu.add(performComputerMove);
+		aIMenu.add(automateTopPlayersMoves);
+		aIMenu.add(automateBottomPlayersMoves);
 		aIMenu.add(emulateGame);
 		this.add(aIMenu);
 
+	}
+
+	private JCheckBoxMenuItem createAutomatePlayerMovesCheckbox(
+			PlayerToken playerToken, String menuItemName) {
+		JCheckBoxMenuItem checkBoxForAutomatingTopPlayer = new JCheckBoxMenuItem(
+				menuItemName);
+		checkBoxForAutomatingTopPlayer
+				.addActionListener(new PerformMovesPlayerActionListener(
+						playerToken, checkBoxForAutomatingTopPlayer));
+
+		return checkBoxForAutomatingTopPlayer;
 	}
 
 	private JMenuItem createEmulateGameMenuItem() {
@@ -86,11 +90,4 @@ public class CheckersOptionsMenu extends JMenuBar {
 		return emulateGame;
 	}
 
-	private JMenuItem createPerformComputerMoveMenuItem() {
-		JMenuItem performComputerMove = new JMenuItem("Perform Computer Move");
-		performComputerMove
-				.addActionListener(new PerformComputerMoveActionListener());
-		performComputerMove.setMnemonic('m');
-		return performComputerMove;
-	}
 }

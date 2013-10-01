@@ -9,13 +9,17 @@ public class CheckersBoardModel {
 	private ArrayList<CheckersPieceModel> piecesOnBoard;
 	private final List<CheckersBoardObserverInterface> observers;
 	private final Stack<UndoableMove> undoMoveStack;
-	private int[][] spaceNotation; 
+	private int[][] spaceNotation;
+	private int turnCount;
+	private int lastTurnThatAPieceWasCaptured;
 
 	public CheckersBoardModel() {
 		initializeBoard();
-		initializeNotation();
+		// initializeNotation();
 		this.observers = new ArrayList<CheckersBoardObserverInterface>();
 		this.undoMoveStack = new Stack<UndoableMove>();
+		this.turnCount = 0;
+		this.lastTurnThatAPieceWasCaptured = 0;
 	}
 
 	private void initializeBoard() {
@@ -24,33 +28,32 @@ public class CheckersBoardModel {
 			for (int row = 0; row < 3; row++) {
 				if ((column + row) % 2 == 1) {
 					this.piecesOnBoard.add(new CheckersPieceModel(row, column,
-							PlayerToken.OPPONENT));
+							PlayerToken.TOP_PLAYER));
 				}
 			}
 			for (int row = 5; row < 8; row++) {
 				if ((column + row) % 2 == 1) {
 					this.piecesOnBoard.add(new CheckersPieceModel(row, column,
-							PlayerToken.PLAYER));
+							PlayerToken.BOTTOM_PLAYER));
 				}
 			}
 		}
 	}
 
-	private void initializeNotation(){
-		int spaceNumber=1;
-		for (int column=0; column<8;column++){
-			for (int row =0; row<8; row++){
-				if((column+row)%2==1){
-					spaceNotation[column][row]=spaceNumber;
+	private void initializeNotation() {
+		int spaceNumber = 1;
+		for (int column = 0; column < 8; column++) {
+			for (int row = 0; row < 8; row++) {
+				if ((column + row) % 2 == 1) {
+					this.spaceNotation[column][row] = spaceNumber;
 					spaceNumber++;
-				}
-				else 
-					spaceNotation[column][row]=0;
-					
+				} else
+					this.spaceNotation[column][row] = 0;
+
 			}
 		}
 	}
-	
+
 	public boolean capturePiece(CheckersPieceModel pieceToCapture) {
 		pieceToCapture.capturePiece();
 		boolean pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy = this.piecesOnBoard
@@ -62,15 +65,16 @@ public class CheckersBoardModel {
 	public boolean actuallyMovePiece(PossibleMove moveToMake) {
 		if (moveToMake == null)
 			return false;
+		this.turnCount++;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
 		int rowToMoveTo = moveToMake.getNewRowLocation();
 
 		boolean pieceShouldBecomeKing = false;
 		if (rowToMoveTo == 0
-				&& pieceToMove.getPlayerToken().equals(PlayerToken.PLAYER)) {
+				&& pieceToMove.getPlayerToken().equals(PlayerToken.BOTTOM_PLAYER)) {
 			pieceShouldBecomeKing = true;
 		} else if (rowToMoveTo == 7
-				&& pieceToMove.getPlayerToken().equals(PlayerToken.OPPONENT)) {
+				&& pieceToMove.getPlayerToken().equals(PlayerToken.TOP_PLAYER)) {
 			pieceShouldBecomeKing = true;
 		}
 		UndoableMove undoableMoveToRevertThisMove = new UndoableMove(
@@ -86,6 +90,7 @@ public class CheckersBoardModel {
 		for (CheckersPieceModel checkersPiece : moveToMake
 				.getPiecesThatWillBeCaptured()) {
 			capturePiece(checkersPiece);
+			this.lastTurnThatAPieceWasCaptured = this.turnCount;
 		}
 
 		this.undoMoveStack.push(undoableMoveToRevertThisMove);
@@ -95,6 +100,7 @@ public class CheckersBoardModel {
 
 	public UndoableMove undoLastMove() {
 		if (!this.undoMoveStack.isEmpty()) {
+			this.turnCount--;
 			UndoableMove lastMoveMade = this.undoMoveStack.pop();
 
 			PossibleMove moveToUndo = lastMoveMade.getMoveToUndo();
@@ -161,25 +167,34 @@ public class CheckersBoardModel {
 	public List<CheckersPieceModel> getPiecesOnBoard() {
 		return this.piecesOnBoard;
 	}
-	
-	public int getNotation(CheckersPieceModel piece){
-				
-		return spaceNotation[piece.getColumn()][piece.getRow()];
+
+	public int getNotation(CheckersPieceModel piece) {
+
+		return this.spaceNotation[piece.getColumn()][piece.getRow()];
 	}
-	
-	public CheckersPieceModel getPieceFromNotation(int spaceNumber){
-		for (int column=0; column<8;column++){
-			for (int row =0; row<8; row++){
-				if(spaceNumber==spaceNotation[column][row]){
-					List <CheckersPieceModel> listOfPieces =this.getPiecesOnBoard();
-					for (int i=0; i<listOfPieces.size(); i++){
-						if((listOfPieces.get(i).getColumn()==column)&&
-								(listOfPieces.get(i).getRow()==row))
+
+	public CheckersPieceModel getPieceFromNotation(int spaceNumber) {
+		for (int column = 0; column < 8; column++) {
+			for (int row = 0; row < 8; row++) {
+				if (spaceNumber == this.spaceNotation[column][row]) {
+					List<CheckersPieceModel> listOfPieces = this
+							.getPiecesOnBoard();
+					for (int i = 0; i < listOfPieces.size(); i++) {
+						if ((listOfPieces.get(i).getColumn() == column)
+								&& (listOfPieces.get(i).getRow() == row))
 							return listOfPieces.get(i);
 					}
-				}					
+				}
 			}
 		}
 		return null;
+	}
+
+	public int getTurnCount() {
+		return this.turnCount;
+	}
+
+	public int getLastTurnThatAPieceWasCaptured() {
+		return this.lastTurnThatAPieceWasCaptured;
 	}
 }

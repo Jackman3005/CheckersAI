@@ -29,7 +29,6 @@ public class SmartMoveMaker {
 				bestPossibleMove = possibleMove;
 			}
 		}
-		System.out.println(bestBoardValue);
 		return bestPossibleMove;
 
 	}
@@ -72,8 +71,8 @@ public class SmartMoveMaker {
 	}
 
 	private static PlayerToken getOppositePlayerToken(PlayerToken playerToken) {
-		return playerToken.equals(PlayerToken.PLAYER) ? PlayerToken.OPPONENT
-				: PlayerToken.PLAYER;
+		return playerToken.equals(PlayerToken.BOTTOM_PLAYER) ? PlayerToken.TOP_PLAYER
+				: PlayerToken.BOTTOM_PLAYER;
 	}
 
 }

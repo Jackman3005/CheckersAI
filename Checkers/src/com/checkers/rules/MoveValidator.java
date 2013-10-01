@@ -83,7 +83,7 @@ public class MoveValidator {
 			List<CheckersPieceModel> piecesAlreadyCaptured) {
 		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
 		boolean northIsForward = checkersPiece.getPlayerToken().equals(
-				PlayerToken.PLAYER);
+				PlayerToken.BOTTOM_PLAYER);
 
 		int northRow = checkersPiece.getRow() - 1;
 		int southRow = checkersPiece.getRow() + 1;
@@ -255,7 +255,7 @@ public class MoveValidator {
 
 		ArrayList<PossibleMove> listOfValidMoves = new ArrayList<PossibleMove>();
 		boolean northIsForward = checkersPiece.getPlayerToken().equals(
-				PlayerToken.PLAYER);
+				PlayerToken.BOTTOM_PLAYER);
 		if (northIsForward || checkersPiece.isKing()) {
 			PossibleMove northWestMove = checkForAndReturnValidMoveInAdjustmentDirection(
 					allPiecesOnBoard, checkersPiece, -1, -1);

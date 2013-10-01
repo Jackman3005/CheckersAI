@@ -67,7 +67,7 @@ public class CheckersPieceGui {
 			setDisplayLocationBasedOnModel();
 		}
 		BufferedImage pieceImage;
-		if (this.pieceModel.getPlayerToken().equals(PlayerToken.OPPONENT)) {
+		if (this.pieceModel.getPlayerToken().equals(PlayerToken.TOP_PLAYER)) {
 			pieceImage = this.pieceModel.isKing() ? Images.singleton.blackKingPiece
 					: Images.singleton.blackPiece;
 		} else {
