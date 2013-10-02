@@ -7,11 +7,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.checkers.model.CheckersBoardModel;
 import com.checkers.model.CheckersPieceModel;
 import com.checkers.model.PossibleMove;
 import com.checkers.rules.MoveValidator;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 final class CheckersPieceMouseAndKeyListener implements MouseListener,
 		MouseMotionListener, KeyListener {
@@ -22,6 +24,7 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 	private CheckersPieceGui currentlySelectedPiece_WithRightClick;
 	private Point mouseStartingPoint;
 	private final CheckersBoardModel checkersBoardModel;
+	private char currentKeyPressed;
 
 	public CheckersPieceMouseAndKeyListener(
 			CheckersBoardPanel checkerBoardPanel,
@@ -37,12 +40,26 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 		if (this.currentlySelectedPiece != null) {
 
 			Point newBoardLocation = getBoardLocation(arg0.getPoint());
-			PossibleMove move = MoveValidator
-					.validateAndReturnMove_InvalidMoveReturnsNull(
+			List<PossibleMove> moves = MoveValidator
+					.getAllvalidMovesToLocation_ReturnsEmptyListIfNonFound(
 							this.checkersBoardModel.getPiecesOnBoard(),
 							this.currentlySelectedPiece.getModel(),
 							newBoardLocation.y, newBoardLocation.x);
-			this.checkersBoardModel.actuallyMovePiece(move);
+			if (moves.size() == 1) {
+				this.checkersBoardModel.actuallyMovePiece(moves.get(0));
+			} else if (moves.size() > 1) {
+				try {
+					String stringOfPressedNumber = new String(
+							new char[] { this.currentKeyPressed });
+					int moveToChoose = Integer.parseInt(stringOfPressedNumber);
+					if (moveToChoose <= moves.size()) {
+						this.checkersBoardModel.actuallyMovePiece(moves
+								.get(moveToChoose - 1));
+					}
+				} catch (Exception e) {
+				}
+			}
+
 			this.currentlySelectedPiece.setSelected(false);
 		} else if (this.currentlySelectedPiece_WithRightClick != null) {
 			Point newBoardLocation = getBoardLocation(arg0.getPoint());
@@ -137,11 +154,14 @@ final class CheckersPieceMouseAndKeyListener implements MouseListener,
 	public void keyPressed(KeyEvent keyPress) {
 		if (keyPress.isControlDown() && keyPress.getKeyCode() == 90) {
 			this.checkersBoardModel.undoLastMove();
+		} else {
+			this.currentKeyPressed = keyPress.getKeyChar();
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
+		this.currentKeyPressed = '\0';
 	}
 
 	@Override

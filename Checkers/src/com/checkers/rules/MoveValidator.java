@@ -11,20 +11,21 @@ import com.checkers.model.PossibleMove;
 
 public class MoveValidator {
 
-	public static PossibleMove validateAndReturnMove_InvalidMoveReturnsNull(
+	public static List<PossibleMove> getAllvalidMovesToLocation_ReturnsEmptyListIfNonFound(
 			List<CheckersPieceModel> allPiecesOnBoard,
 			CheckersPieceModel pieceToMove, int newRowPosition,
 			int newColumnPosition) {
 
 		ArrayList<PossibleMove> allValidMoves = getAllValidMovesForASinglePiece(
 				allPiecesOnBoard, pieceToMove);
+		ArrayList<PossibleMove> validMovesThatGoToDestination = new ArrayList<PossibleMove>();
 		for (PossibleMove possibleMove : allValidMoves) {
 			if (possibleMove.getNewColumnLocation() == newColumnPosition
 					&& possibleMove.getNewRowLocation() == newRowPosition) {
-				return possibleMove;
+				validMovesThatGoToDestination.add(possibleMove);
 			}
 		}
-		return null;
+		return validMovesThatGoToDestination;
 	}
 
 	public static List<PossibleMove> getAllValidMovesForPlayer(

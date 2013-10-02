@@ -16,13 +16,13 @@ public class SmartMoveMaker {
 		List<PossibleMove> allValidMovesForPlayer = MoveValidator
 				.getAllValidMovesForPlayer(allCheckersPieces, playerToken);
 		int bestBoardValue = Integer.MIN_VALUE;
-		System.out.println("PlayerToMove: " + playerToken);
+		// System.out.println("PlayerToMove: " + playerToken);
 		List<PossibleMove> listOfMovesEqualInWeight = new ArrayList<PossibleMove>();
 		for (PossibleMove possibleMove : allValidMovesForPlayer) {
 			List<CheckersPieceModel> possibleBoardLayout = CheckersBoardModel
 					.emulateMovingAPieceAndReturnCopyOfPiecesOnBoard(
 							allCheckersPieces, possibleMove);
-			testOutputMethod(possibleMove);
+			// testOutputMethod(possibleMove);
 			int valueOfBoardAfterSevenMoreTurns = getValueOfMoveUsingMinMaxSearchForTheSpecifiedNumberOfTurns(
 					possibleBoardLayout, getOppositePlayerToken(playerToken),
 					7, false);
@@ -39,6 +39,7 @@ public class SmartMoveMaker {
 			int moveToGet = (int) (Math.random() * numberOfEquallyGoodMoves);
 			return listOfMovesEqualInWeight.get(moveToGet);
 		}
+		System.out.println(playerToken + " has Lost.");
 		return null;
 
 	}
@@ -94,9 +95,9 @@ public class SmartMoveMaker {
 			if (!isPlayersTurn && bestValueForBoard == Integer.MIN_VALUE) {
 				valueOfBoardFromPerspectiveOfPlayer = Integer.MAX_VALUE;
 			}
-			System.out.println("ValueOfPossibleTurn: "
-					+ valueOfBoardFromPerspectiveOfPlayer + " for player: "
-					+ playerWeAreTryingToHelp);
+			// System.out.println("ValueOfPossibleTurn: "
+			// + valueOfBoardFromPerspectiveOfPlayer + " for player: "
+			// + playerWeAreTryingToHelp);
 			return valueOfBoardFromPerspectiveOfPlayer;
 		}
 

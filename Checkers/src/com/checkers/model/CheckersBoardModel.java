@@ -68,6 +68,7 @@ public class CheckersBoardModel {
 		if (moveToMake == null)
 			return false;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
+		System.out.print(pieceToMove.getPlayerToken() + ":\t");
 		System.out.print(getNotation(moveToMake.getPieceToMove()) + "-");
 		int rowToMoveTo = moveToMake.getNewRowLocation();
 		List<Point> intermediateLocations = moveToMake
@@ -86,7 +87,7 @@ public class CheckersBoardModel {
 		}
 		pieceToMove.setRow(rowToMoveTo);
 		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
-		System.out.println(getNotation(pieceToMove) + ", ");
+		System.out.println(getNotation(pieceToMove));
 		for (CheckersPieceModel checkersPiece : moveToMake
 				.getPiecesThatWillBeCaptured()) {
 			capturePiece(checkersPiece);

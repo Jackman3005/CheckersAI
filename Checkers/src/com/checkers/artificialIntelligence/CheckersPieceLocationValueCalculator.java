@@ -54,7 +54,7 @@ public class CheckersPieceLocationValueCalculator {
 		mapOfLocationValues.get(0).put(1, 10);
 		mapOfLocationValues.get(0).put(3, 10);
 		mapOfLocationValues.get(0).put(5, 10);
-		mapOfLocationValues.get(0).put(7, 8);
+		mapOfLocationValues.get(0).put(7, 6);
 
 		mapOfLocationValues.get(1).put(0, 10);
 		mapOfLocationValues.get(1).put(2, 10);
@@ -64,9 +64,9 @@ public class CheckersPieceLocationValueCalculator {
 		mapOfLocationValues.get(2).put(1, 10);
 		mapOfLocationValues.get(2).put(3, 12);
 		mapOfLocationValues.get(2).put(5, 12);
-		mapOfLocationValues.get(2).put(7, 9);
+		mapOfLocationValues.get(2).put(7, 8);
 
-		mapOfLocationValues.get(3).put(0, 9);
+		mapOfLocationValues.get(3).put(0, 8);
 		mapOfLocationValues.get(3).put(2, 12);
 		mapOfLocationValues.get(3).put(4, 12);
 		mapOfLocationValues.get(3).put(6, 10);
@@ -74,9 +74,9 @@ public class CheckersPieceLocationValueCalculator {
 		mapOfLocationValues.get(4).put(1, 10);
 		mapOfLocationValues.get(4).put(3, 12);
 		mapOfLocationValues.get(4).put(5, 12);
-		mapOfLocationValues.get(4).put(7, 9);
+		mapOfLocationValues.get(4).put(7, 8);
 
-		mapOfLocationValues.get(5).put(0, 9);
+		mapOfLocationValues.get(5).put(0, 8);
 		mapOfLocationValues.get(5).put(2, 10);
 		mapOfLocationValues.get(5).put(4, 10);
 		mapOfLocationValues.get(5).put(6, 10);
@@ -86,7 +86,7 @@ public class CheckersPieceLocationValueCalculator {
 		mapOfLocationValues.get(6).put(5, 10);
 		mapOfLocationValues.get(6).put(7, 10);
 
-		mapOfLocationValues.get(7).put(0, 8);
+		mapOfLocationValues.get(7).put(0, 6);
 		mapOfLocationValues.get(7).put(2, 10);
 		mapOfLocationValues.get(7).put(4, 10);
 		mapOfLocationValues.get(7).put(6, 10);
