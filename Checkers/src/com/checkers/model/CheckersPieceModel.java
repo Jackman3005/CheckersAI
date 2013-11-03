@@ -9,8 +9,10 @@ public class CheckersPieceModel {
 	private boolean isKing;
 	private boolean isCaptured;
 	private final ArrayList<CheckersPieceObserverInterface> observers;
+	private final int id;
 
-	public CheckersPieceModel(int row, int column, PlayerToken player) {
+	public CheckersPieceModel(int id, int row, int column, PlayerToken player) {
+		this.id = id;
 		this.playerToken = player;
 		this.row = row;
 		this.column = column;
@@ -56,19 +58,6 @@ public class CheckersPieceModel {
 		return this.isCaptured;
 	}
 
-	public static CheckersPieceModel copy(CheckersPieceModel checkersPieceModel) {
-		CheckersPieceModel copyOfCheckersPiece = new CheckersPieceModel(
-				checkersPieceModel.getRow(), checkersPieceModel.getColumn(),
-				checkersPieceModel.getPlayerToken());
-		if (checkersPieceModel.isKing()) {
-			copyOfCheckersPiece.kingMe();
-		}
-		if (checkersPieceModel.isCaptured()) {
-			copyOfCheckersPiece.capturePiece();
-		}
-		return copyOfCheckersPiece;
-	}
-
 	public void undoCapturePiece() {
 		this.isCaptured = false;
 		notifyObserversPieceWasUnCaptured();
@@ -84,6 +73,10 @@ public class CheckersPieceModel {
 
 	public void removeObserver(CheckersPieceObserverInterface observer) {
 		this.observers.remove(observer);
+	}
+
+	public int getId() {
+		return this.id;
 	}
 
 	private void notifyObserversPieceWasCaptured() {

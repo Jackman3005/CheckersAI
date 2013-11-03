@@ -17,9 +17,7 @@ public class CheckersOptionsMenu extends JMenuBar {
 	private final class ResetBoardActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			while (CheckersOptionsMenu.this.checkersBoardModel.undoLastMove() != null) {
-
-			}
+			CheckersOptionsMenu.this.checkersBoardModel.resetBoard();
 		}
 	}
 

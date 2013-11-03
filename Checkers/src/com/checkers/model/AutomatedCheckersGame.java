@@ -19,11 +19,15 @@ public class AutomatedCheckersGame {
 				if (AutomatedCheckersGame.this.theAutomatedPlayerStartedOnAnEvenTurn
 						&& AutomatedCheckersGame.this.checkersBoardModel
 								.getTurnCount() % 2 == 0) {
-					AutomatedCheckersGame.this.makeMoveForPlayer();
+					if (!AutomatedCheckersGame.this.makeMoveForPlayer()) {
+						stopMakingMovesForPlayerWhenItsTheirTurn();
+					}
 				} else if (!AutomatedCheckersGame.this.theAutomatedPlayerStartedOnAnEvenTurn
 						&& AutomatedCheckersGame.this.checkersBoardModel
 								.getTurnCount() % 2 != 0) {
-					AutomatedCheckersGame.this.makeMoveForPlayer();
+					if (!AutomatedCheckersGame.this.makeMoveForPlayer()) {
+						stopMakingMovesForPlayerWhenItsTheirTurn();
+					}
 				}
 			}
 		}
@@ -42,7 +46,9 @@ public class AutomatedCheckersGame {
 			PossibleMove bestMoveToMakeForPlayer = SmartMoveMaker
 					.getBestMoveToMakeForPlayer(
 							AutomatedCheckersGame.this.checkersBoardModel
-									.getPiecesOnBoard(), playerToMove);
+									.getPiecesOnBoard(), playerToMove,
+							AutomatedCheckersGame.this.checkersBoardModel
+									.getAllMovesMade());
 			boolean aCheckersPieceWasMovedThisTurn = AutomatedCheckersGame.this.checkersBoardModel
 					.actuallyMovePiece(bestMoveToMakeForPlayer);
 			int numberOfTurnsSinceAPieceWasCapture = AutomatedCheckersGame.this.checkersBoardModel
@@ -81,13 +87,14 @@ public class AutomatedCheckersGame {
 		makeMoveForPlayer();
 	}
 
-	private void makeMoveForPlayer() {
+	private boolean makeMoveForPlayer() {
 		PossibleMove bestMoveToMakeForPlayer = SmartMoveMaker
 				.getBestMoveToMakeForPlayer(
 						AutomatedCheckersGame.this.checkersBoardModel
 								.getPiecesOnBoard(),
-						AutomatedCheckersGame.this.playerToMakeMovesFor);
-		boolean aCheckersPieceWasMovedThisTurn = AutomatedCheckersGame.this.checkersBoardModel
+						AutomatedCheckersGame.this.playerToMakeMovesFor,
+						this.checkersBoardModel.getAllMovesMade());
+		return AutomatedCheckersGame.this.checkersBoardModel
 				.actuallyMovePiece(bestMoveToMakeForPlayer);
 	}
 

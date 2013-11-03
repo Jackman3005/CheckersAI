@@ -37,7 +37,7 @@ public class CheckersPieceLocationValueCalculator {
 	}
 
 	public int piecesValueAtLocation(CheckersPieceModel checkersPiece) {
-		int piecesBaseValue = checkersPiece.isKing() ? 7 : 3;
+		int piecesBaseValue = checkersPiece.isKing() ? 8 : 3;
 		Integer valueOfLocation = this.mapOfLocationValues.get(
 				checkersPiece.getRow()).get(checkersPiece.getColumn());
 

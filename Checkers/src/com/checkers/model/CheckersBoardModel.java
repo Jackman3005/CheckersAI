@@ -13,6 +13,7 @@ public class CheckersBoardModel {
 	private int[][] spaceNotation;
 	private int turnCount;
 	private int lastTurnThatAPieceWasCaptured;
+	private final GameReferee gameReferee;
 
 	public CheckersBoardModel() {
 		initializeBoard();
@@ -21,21 +22,23 @@ public class CheckersBoardModel {
 		this.undoMoveStack = new Stack<UndoableMove>();
 		this.turnCount = 0;
 		this.lastTurnThatAPieceWasCaptured = 0;
+		this.gameReferee = new GameReferee(this);
 	}
 
 	private void initializeBoard() {
 		this.piecesOnBoard = new ArrayList<CheckersPieceModel>();
+		int pieceId = 0;
 		for (int column = 0; column < 8; column++) {
 			for (int row = 0; row < 3; row++) {
 				if ((column + row) % 2 == 1) {
-					this.piecesOnBoard.add(new CheckersPieceModel(row, column,
-							PlayerToken.TOP_PLAYER));
+					this.piecesOnBoard.add(new CheckersPieceModel(pieceId++,
+							row, column, PlayerToken.TOP_PLAYER));
 				}
 			}
 			for (int row = 5; row < 8; row++) {
 				if ((column + row) % 2 == 1) {
-					this.piecesOnBoard.add(new CheckersPieceModel(row, column,
-							PlayerToken.BOTTOM_PLAYER));
+					this.piecesOnBoard.add(new CheckersPieceModel(pieceId++,
+							row, column, PlayerToken.BOTTOM_PLAYER));
 				}
 			}
 		}
@@ -64,18 +67,22 @@ public class CheckersBoardModel {
 		return pieceWasOneOfTheOnesActuallyOnTheBoardAndNotACopy;
 	}
 
+	public void resetBoard() {
+		// This method still blows apparantly.
+		while (undoLastMove() != null) {
+		}
+		this.turnCount = 0;
+		this.lastTurnThatAPieceWasCaptured = 0;
+		notifyObserversThatTheBoardChanged();
+	}
+
 	public boolean actuallyMovePiece(PossibleMove moveToMake) {
 		if (moveToMake == null)
 			return false;
 		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
-		System.out.print(pieceToMove.getPlayerToken() + ":\t");
-		System.out.print(getNotation(moveToMake.getPieceToMove()) + "-");
+		printOutMoveNotationToConsole(moveToMake);
+
 		int rowToMoveTo = moveToMake.getNewRowLocation();
-		List<Point> intermediateLocations = moveToMake
-				.getIntermediateLocations();
-		for (Point point : intermediateLocations) {
-			System.out.print(this.spaceNotation[point.y][point.x] + "-");
-		}
 		boolean pieceShouldBecomeKing = shouldPieceBecomeKing(
 				pieceToMove.getPlayerToken(), rowToMoveTo);
 		UndoableMove undoableMoveToRevertThisMove = new UndoableMove(
@@ -87,7 +94,6 @@ public class CheckersBoardModel {
 		}
 		pieceToMove.setRow(rowToMoveTo);
 		pieceToMove.setColumn(moveToMake.getNewColumnLocation());
-		System.out.println(getNotation(pieceToMove));
 		for (CheckersPieceModel checkersPiece : moveToMake
 				.getPiecesThatWillBeCaptured()) {
 			capturePiece(checkersPiece);
@@ -98,8 +104,33 @@ public class CheckersBoardModel {
 		this.turnCount++;
 		notifyObserversThatTheBoardChanged();
 		notifyObserversThatATurnHasEnded();
-		return this.piecesOnBoard.contains(pieceToMove);
 
+		this.gameReferee.howWeDoing(this.undoMoveStack, moveToMake);
+
+		return this.piecesOnBoard.contains(pieceToMove);
+	}
+
+	private void printOutMoveNotationToConsole(PossibleMove moveToMake) {
+		CheckersPieceModel pieceToMove = moveToMake.getPieceToMove();
+		String moveOrJumpNotation;
+		if (moveToMake.getPiecesThatWillBeCaptured().isEmpty()) {
+			moveOrJumpNotation = "-";
+		} else {
+			moveOrJumpNotation = "x";
+		}
+
+		System.out.print(pieceToMove.getPlayerToken() + ":\t");
+		System.out.print(getNotation(pieceToMove) + moveOrJumpNotation);
+
+		List<Point> intermediateLocations = moveToMake
+				.getIntermediateLocations();
+
+		for (Point point : intermediateLocations) {
+			System.out.print(this.spaceNotation[point.y][point.x]
+					+ moveOrJumpNotation);
+		}
+		System.out.println(getNotation(moveToMake.getNewRowLocation(),
+				moveToMake.getNewColumnLocation()));
 	}
 
 	private static boolean shouldPieceBecomeKing(PlayerToken player,
@@ -127,7 +158,6 @@ public class CheckersBoardModel {
 				capturedPiece.undoCapturePiece();
 				this.piecesOnBoard.add(capturedPiece);
 			}
-
 			if (lastMoveMade.pieceWasKingedDuringMove()) {
 				pieceToMoveBack.undoKingMe();
 			}
@@ -147,6 +177,7 @@ public class CheckersBoardModel {
 				PlayerToken playerToken = moveToEmulate.getPieceToMove()
 						.getPlayerToken();
 				CheckersPieceModel movedCheckerPieceCopy = new CheckersPieceModel(
+						moveToEmulate.getPieceToMove().getId(),
 						moveToEmulate.getNewRowLocation(),
 						moveToEmulate.getNewColumnLocation(), playerToken);
 				if (shouldPieceBecomeKing(playerToken,
@@ -163,13 +194,9 @@ public class CheckersBoardModel {
 			if (!checkersPieceModel.equals(moveToEmulate.getPieceToMove())
 					&& !piecesThatWillBeCapturedBecauseOfThisMove
 							.contains(checkersPieceModel)) {
-				CheckersPieceModel copyOfCheckersPieceModel_MayBeUneccessary = CheckersPieceModel
-						.copy(checkersPieceModel);
-				copyOfPiecesOnBoardWithMoveEmulated
-						.add(copyOfCheckersPieceModel_MayBeUneccessary);
+				copyOfPiecesOnBoardWithMoveEmulated.add(checkersPieceModel);
 			}
 		}
-
 		return copyOfPiecesOnBoardWithMoveEmulated;
 	}
 
@@ -199,7 +226,7 @@ public class CheckersBoardModel {
 
 	public int getNotation(CheckersPieceModel piece) {
 
-		return this.spaceNotation[piece.getRow()][piece.getColumn()];
+		return getNotation(piece.getRow(), piece.getColumn());
 	}
 
 	public int getNotation(int row, int column) {
@@ -229,6 +256,14 @@ public class CheckersBoardModel {
 
 	public int getTurnCount() {
 		return this.turnCount;
+	}
+
+	public List<PossibleMove> getAllMovesMade() {
+		ArrayList<PossibleMove> listToReturn = new ArrayList<PossibleMove>();
+		for (int i = 0; i < this.undoMoveStack.size(); i++) {
+			listToReturn.add(this.undoMoveStack.get(i).getMoveToUndo());
+		}
+		return listToReturn;
 	}
 
 }

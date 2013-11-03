@@ -207,7 +207,7 @@ public class MoveValidator {
 		List<PossibleMove> listOfValidJumpMoves = new ArrayList<PossibleMove>();
 
 		CheckersPieceModel tempCheckersPiece = new CheckersPieceModel(
-				checkersPiece.getRow() + rowAdjustment,
+				checkersPiece.getId(), checkersPiece.getRow() + rowAdjustment,
 				checkersPiece.getColumn() + columnAdjustment,
 				checkersPiece.getPlayerToken());
 		if (checkersPiece.isKing()) {
