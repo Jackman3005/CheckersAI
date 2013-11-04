@@ -14,6 +14,7 @@ public class CheckersBoardModel {
 	private int turnCount;
 	private int lastTurnThatAPieceWasCaptured;
 	private final GameReferee gameReferee;
+	private boolean shouldShowNotation_ShouldBeOnADifferentModelButImLazy = false;
 
 	public CheckersBoardModel() {
 		initializeBoard();
@@ -23,6 +24,15 @@ public class CheckersBoardModel {
 		this.turnCount = 0;
 		this.lastTurnThatAPieceWasCaptured = 0;
 		this.gameReferee = new GameReferee(this);
+	}
+
+	public void setShouldShowNotation(boolean shouldShowNotation) {
+		this.shouldShowNotation_ShouldBeOnADifferentModelButImLazy = shouldShowNotation;
+		notifyObserversThatTheBoardChanged();
+	}
+
+	public boolean shouldShowNotationOnBoard() {
+		return this.shouldShowNotation_ShouldBeOnADifferentModelButImLazy;
 	}
 
 	private void initializeBoard() {

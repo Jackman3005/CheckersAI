@@ -1,6 +1,8 @@
 package com.checkers.display;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -83,12 +85,42 @@ public class CheckersBoardPanel extends JPanel {
 		for (CheckersPieceGui piece : this.checkersGuiPieces) {
 			piece.draw(graphics2D);
 		}
-
+		if (this.checkersBoardModel.shouldShowNotationOnBoard()) {
+			graphics2D.setColor(Color.LIGHT_GRAY);
+			for (int row = 0; row < BOARD_SIZE; row++) {
+				for (int col = 0; col < BOARD_SIZE; col++) {
+					int notation = this.checkersBoardModel
+							.getNotation(row, col);
+					if (notation != 0) {
+						char[] numberToDraw = Integer.toString(notation)
+								.toCharArray();
+						drawStringInCenterOfSquare(graphics2D, numberToDraw,
+								col, row);
+					}
+				}
+			}
+		}
 		for (CheckersPieceGui piece : this.checkersGuiPieces) {
 			if (piece.isSelected()) {
 				piece.draw(graphics2D);
 			}
 		}
 
+	}
+
+	private void drawStringInCenterOfSquare(Graphics2D graphics2D,
+			char[] numberToDraw, int column, int row) {
+		int size = CheckersBoardPanel.SQUARE_SIZE;
+		Font defaultFont = graphics2D.getFont();
+		Font fontToUse = new Font(defaultFont.getFontName(),
+				defaultFont.getStyle(), 36);
+		graphics2D.setFont(fontToUse);
+		FontMetrics fontMetrics = graphics2D.getFontMetrics();
+		int widthOfStringToDraw = fontMetrics.charsWidth(numberToDraw, 0,
+				numberToDraw.length);
+		int heightOfStringToDraw = fontMetrics.getHeight();
+		graphics2D.drawChars(numberToDraw, 0, numberToDraw.length, column
+				* size + size / 2 - (widthOfStringToDraw / 2), row * size
+				+ size / 2 + heightOfStringToDraw / 4);
 	}
 }

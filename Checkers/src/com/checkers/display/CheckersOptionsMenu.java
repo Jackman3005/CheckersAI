@@ -14,6 +14,24 @@ import com.checkers.model.CheckersBoardModel;
 import com.checkers.model.PlayerToken;
 
 public class CheckersOptionsMenu extends JMenuBar {
+	private final class ShowLocationNotationActionListener implements
+			ActionListener {
+
+		private final JCheckBoxMenuItem showNotationCheckbox;
+
+		public ShowLocationNotationActionListener(
+				JCheckBoxMenuItem showNotationCheckbox) {
+			this.showNotationCheckbox = showNotationCheckbox;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			CheckersOptionsMenu.this.checkersBoardModel
+					.setShouldShowNotation(this.showNotationCheckbox
+							.isSelected());
+		}
+	}
+
 	private final class ResetBoardActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -73,12 +91,14 @@ public class CheckersOptionsMenu extends JMenuBar {
 				PlayerToken.BOTTOM_PLAYER, "Automate Bottom Player");
 		JMenuItem emulateGame = createEmulateGameMenuItem();
 		JMenuItem resetBoardMenuItem = createResetBoardMenuItem();
+		JCheckBoxMenuItem showNotationCheckBox = createShowNotationCheckBox();
 
 		aIMenu.add(automateTopPlayersMoves);
 		aIMenu.add(automateBottomPlayersMoves);
 		aIMenu.add(emulateGame);
 		aIMenu.add(new JSeparator());
 		aIMenu.add(resetBoardMenuItem);
+		aIMenu.add(showNotationCheckBox);
 		this.add(aIMenu);
 
 	}
@@ -92,13 +112,24 @@ public class CheckersOptionsMenu extends JMenuBar {
 
 	private JCheckBoxMenuItem createAutomatePlayerMovesCheckbox(
 			PlayerToken playerToken, String menuItemName) {
-		JCheckBoxMenuItem checkBoxForAutomatingTopPlayer = new JCheckBoxMenuItem(
+		JCheckBoxMenuItem checkBoxForAutomatingPlayer = new JCheckBoxMenuItem(
 				menuItemName);
-		checkBoxForAutomatingTopPlayer
+		checkBoxForAutomatingPlayer
 				.addActionListener(new PerformMovesPlayerActionListener(
-						playerToken, checkBoxForAutomatingTopPlayer));
+						playerToken, checkBoxForAutomatingPlayer));
 
-		return checkBoxForAutomatingTopPlayer;
+		return checkBoxForAutomatingPlayer;
+	}
+
+	private JCheckBoxMenuItem createShowNotationCheckBox() {
+		JCheckBoxMenuItem checkBoxForShowingLocationNotation = new JCheckBoxMenuItem(
+				"Show Location Notation");
+		checkBoxForShowingLocationNotation
+				.addActionListener(new ShowLocationNotationActionListener(
+						checkBoxForShowingLocationNotation));
+
+		return checkBoxForShowingLocationNotation;
+
 	}
 
 	private JMenuItem createEmulateGameMenuItem() {
