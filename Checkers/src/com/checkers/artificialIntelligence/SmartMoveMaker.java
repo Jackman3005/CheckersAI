@@ -27,7 +27,17 @@ public class SmartMoveMaker {
 				// few times.
 				// We don't want to continue repeating the same move pattern
 			}
-
+			/*
+			 * An idea on fixing the double-jump issue
+			 * boolean doubleJumpInTreePlayer=false;
+			 * boolean doubleJumpInTreeeOponent=false;
+			 * if (doubleJumpInTreeOponent) continue; //don't let it make this move
+			 * if (doubleJumpInTreePlayer) {
+			 * 		//Put Something here to rate this move higher
+			 * }
+			 *  //Will need to put the flags to true if a double jump was made
+			 *  
+			 */
 			List<CheckersPieceModel> possibleBoardLayout = CheckersBoardModel
 					.emulateMovingAPieceAndReturnCopyOfPiecesOnBoard(
 							allCheckersPieces, possibleMove);
@@ -46,7 +56,7 @@ public class SmartMoveMaker {
 		int numberOfEquallyGoodMoves = listOfMovesEqualInWeight.size();
 		if (numberOfEquallyGoodMoves > 0) {
 			int moveToGet = (int) (Math.random() * numberOfEquallyGoodMoves);
-			return listOfMovesEqualInWeight.get(0);
+			return listOfMovesEqualInWeight.get(moveToGet);//CHanged from 0 -Patrick
 		}
 		System.out.println(playerToken + " has Lost.");
 		return null;

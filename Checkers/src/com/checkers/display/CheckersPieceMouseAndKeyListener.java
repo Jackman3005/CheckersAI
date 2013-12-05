@@ -13,7 +13,7 @@ import com.checkers.model.CheckersBoardModel;
 import com.checkers.model.CheckersPieceModel;
 import com.checkers.model.PossibleMove;
 import com.checkers.rules.MoveValidator;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+//import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 final class CheckersPieceMouseAndKeyListener implements MouseListener,
 		MouseMotionListener, KeyListener {

@@ -4,3 +4,5 @@
 *.jar
 *.war
 *.ear
+Checkers/.settings/org.eclipse.wst.common.project.facet.core.xml
+Checkers/src/Main.java
